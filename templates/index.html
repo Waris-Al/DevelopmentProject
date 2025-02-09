@@ -1,21 +1,26 @@
 <!DOCTYPE html>
 <link href="../static/css/index.css" rel="stylesheet" type="text/css" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-{% include 'NavBar.html' %}
+{% include "NavBar.html" %}
 <html>
     <Title>MyDiscog</Title>
 <body>
 
 <div class="IntroText">
-<h1>MyDiscog</h1>
-<p> Hello, and welcome to MyDiscog. </p>
+    <h1>MyDiscog</h1>
+    <p> Hello, and welcome to MyDiscog. </p>
 
-<p> This application will allow you to keep track of your favourite artists, albums and songs! By connecting to your Spotify or other streaming service
-    account, MyDiscog will automatically keep a record of what you've listened to and when, and even let you attach a review to it. You can also look at others reviews, leave comments,
-    and make friends who share your taste! 
-</p>
+    <p> This application will allow you to keep track of your favourite artists, albums and songs! By connecting to your Spotify or other streaming service
+        account, MyDiscog will automatically keep a record of what you've listened to and when, and even let you attach a review to it. You can also look at others reviews, leave comments,
+        and make friends who share your taste! 
+    </p>
 
-<p> MyDiscog will learn from your tastes and make recommendations on new artists/albums that fit perfectly with what you're already into. </p>
+    <p> MyDiscog will learn from your tastes and make recommendations on new artists/albums that fit perfectly with what you're already into. </p>
+    <div class="LandingPageAlbumCovers">
+        <img src="../static/Images/folklore-cover.png" alt="folklore-cover" class="folklore-cover">
+        <img src="../static/Images/MMTBS.png" alt="MMTBS" class="MMBTS">
+        <img src="../static/Images/EIKAL-laufey-cover.png" alt="EIKAL-laufey-cover" class="EIKAL-laufey-cover">
+    </div>
 </div>
 </body>
 </html>

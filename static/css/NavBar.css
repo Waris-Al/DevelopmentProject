@@ -41,12 +41,8 @@
     border-radius: 4px;
   }
 
-  img
-  {
-    width:40px;
-    height:40px;
-  }
-
   .Logo {
     margin-top: -6px;
+    width:40px;
+    height:40px;
   }
