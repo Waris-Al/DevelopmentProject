@@ -1,0 +1,18 @@
+
+body {
+    font-size: 18px;
+  }
+  
+  /* Might need to change this value, just google what the default sizes are. or ask jess */
+  @media screen and (max-width: 768px) {
+    body {
+      font-size: 16px !important;
+    }
+  }
+  
+
+.IntroText{
+    width: 50%;
+    margin-left: 25%;
+
+}
