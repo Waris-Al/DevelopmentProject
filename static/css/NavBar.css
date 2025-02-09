@@ -1,48 +1,50 @@
-  
+body 
+{
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
 
-  body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-  }
+.navbar 
+{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #e9b215;
+}
 
 
-  .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    background-color: #e9b215;
-  }
-
-
-  .navbar 
+.navbar 
+{
+  .left-items 
   {
-  .left-items {
     display: flex;
   }
-  .right-items {
+  .right-items 
+  {
     display: none;
   }
 }
 
+.navbar a 
+{
+  color: white;
+  padding: 10px 15px;
+  text-decoration: none;
+  height: 20px;
+}
 
 
-  .navbar a {
-    color: white;
-    padding: 10px 15px;
-    text-decoration: none;
-    height: 20px;
-  }
+.navbar a:hover 
+{
+  background-color: #ffdcad;
+  border-radius: 4px;
+}
 
-
-  .navbar a:hover {
-    background-color: #ffdcad;
-    border-radius: 4px;
-  }
-
-  .Logo {
-    margin-top: -6px;
-    width:40px;
-    height:40px;
-  }
+.Logo 
+{
+  margin-top: -6px;
+  width:40px;
+  height:40px;
+}

@@ -1,34 +1,36 @@
 
-body {
-    font-size: 18px;
-
-    .LandingPageAlbumCovers{
-      display: flex;
-      justify-content: space-between;
-      img{
-        width: 33%;
-
-      }
+body 
+{
+  font-size: 18px;
+  .LandingPageAlbumCovers
+  {
+    display: flex;
+    justify-content: space-between;
+    img
+    {
+      width: 33%;
     }
+  }
   
   
   /* Might need to change this value, just google what the default sizes are. or ask jess */
-  @media screen and (max-width: 768px) {
-
-      font-size: 16px;
-
-      .LandingPageAlbumCovers{
-        display: grid;
-        img{
-          width: 100%;
-          margin-bottom: 20px;
-        }
+  @media screen and (max-width: 768px) 
+  {
+    font-size: 16px;
+    .LandingPageAlbumCovers
+    {
+      display: grid;
+      img
+      {
+        width: 100%;
+        margin-bottom: 20px;
       }
+    }
   }
 }
 
-.IntroText{
-    width: 50%;
-    margin-left: 25%;
-
+.IntroText
+{
+  width: 50%;
+  margin-left: 25%;
 }
