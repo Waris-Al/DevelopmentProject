@@ -25,4 +25,13 @@ def registerUser(inputtedusername, theirEmail, theirpassword):
     db.session.commit()
     return f'User {new_user.username} created!'
 
+
+def logUserIn(theirEmail, theirPassword):
+    user = my_discog_user.query.filter_by(email=theirEmail).first()
+
+    if user and user.password == theirPassword:  
+        return True 
+    else:
+        return False  
+
 #need to do some actual database design but for now this works to show off the concept
