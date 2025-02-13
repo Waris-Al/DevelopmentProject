@@ -11,7 +11,7 @@ body
   justify-content: space-between;
   align-items: center;
   padding: 10px;
-  background-color: #e9b215;
+  background-color: #470099;
 }
 
 
@@ -38,8 +38,8 @@ body
 
 .navbar a:hover 
 {
-  background-color: #ffdcad;
-  border-radius: 4px;
+  background-color: #a25df1;
+  border-radius: 22px;
 }
 
 .Logo 
