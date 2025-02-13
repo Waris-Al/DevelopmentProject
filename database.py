@@ -10,18 +10,19 @@ db = SQLAlchemy()
 def init_db(app):
     db.init_app(app) 
 
-class sas21(db.Model):
+class my_discog_user(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(120), unique=False, nullable=False)
 
     def __repr__(self):
         return f'<sas21 {self.username}>'
 
-def create_user():
-    new_user = sas21(username='dsfdsfdsfdsfdsf', email='ddsfdsfdsfdsfdssadsadasd@example.com')
+def registerUser(inputtedusername, theirEmail, theirpassword):
+    new_user = my_discog_user(username=inputtedusername, email=theirEmail, password=theirpassword)
     db.session.add(new_user)
     db.session.commit()
     return f'User {new_user.username} created!'
 
-#The code in here is just an example of whats needed for database connections
+#need to do some actual database design but for now this works to show off the concept
