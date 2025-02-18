@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request, redirect
+from flask import Flask, render_template, url_for, request, redirect, session
 from database import registerUser, init_db, logUserIn
 from dotenv import load_dotenv
 import os
@@ -6,6 +6,7 @@ app = Flask(__name__)
 
 #Stuff to load database
 load_dotenv(dotenv_path='env/.env')
+app.secret_key = os.getenv("app.secret_key")
 app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{os.getenv("dbMasterUsername")}:{os.getenv("dbMasterPassword")}@localhost/dbname'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 init_db(app)
@@ -27,10 +28,14 @@ def Login():
         success = logUserIn(email, password)
         
         if success:
+            session.pop('error', None)
             return redirect(url_for('Homepage'))
         else:
-            return redirect(url_for("test.html")) #change this to an error message
-    return render_template('login.html')
+            session['error'] = "Invalid username or password"
+            return redirect(url_for('Login')) 
+    
+    error = session.pop('error', None)
+    return render_template('login.html', error=error)
 
 @app.route('/Register', methods=['GET', 'POST'])
 def Register():

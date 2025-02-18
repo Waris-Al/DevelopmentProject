@@ -13,6 +13,9 @@
             <input type="text" id="password" name="password" required><br><br>
         <input type="submit" value="Submit">
         </form>
+        {% if error %}
+            <p style="color: red;">{{ error }}</p>
+        {% endif %}
     </div>
 </body>
 </html>
