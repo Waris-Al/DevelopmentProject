@@ -1,3 +1,71 @@
-body{
+
+img {
+    width: 175px;
+    height: 175px;
+}
+
+.topThree {
+    padding-top: 30px;
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+    align-items: end;
+}
+
+button {
+    position: absolute;
+    display: flex;
+}
+
+p {
+    width: 175px;
+}
+
+.RecentReviews {
+    margin-top: 10%;
+    width: 80%;
+    border-collapse: collapse;
+    margin-left: 10%;
     
+}
+
+.RecentReviews td {
+    border: 1px solid black;
+    padding: 10px;
+    text-align: center;
+}
+
+.RecentReviews th {
+    background-color: #f4f4f4;
+}
+
+.RecentReviews img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+/* for mobile views */
+@media screen and (max-width: 768px) {
+    img {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .topThree {
+        padding-top: 30px;
+        display: flex;
+        justify-content: space-around;
+        text-align: center;
+        align-items: end;
+    }
+
+    button {
+        position: absolute;
+        display: flex;
+    }
+
+    p {
+        width: 100px;
+    }
 }
