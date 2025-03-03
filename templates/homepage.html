@@ -47,6 +47,73 @@
                 </tr>
             </tbody>
         </table>
+        <button onclick="addReview()">Add Review</button>
     </div>
+
+    <div id="newReview" class="newReview" style="display:none">
+        <input type="text" id="searchBar" class="searchBar" placeholder="Search...">
+    
+        <div class="contentContainer">
+            <div class="paragraphs">
+                <p id="albumName" class="albumName">Album Name</p>
+                <p id="artistName" class="artistName">Artist Name</p>
+                <p id="averageRating" class="averageRating">Average Rating</p>
+    
+                <label for="dateListened">Date Listened:</label>
+                <input type="date" id="dateListened" class="dateInput">
+    
+                <div class="firstListenContainer">
+                    <p id="firstListen" class="firstListen">First Listen 
+                        <button id="firstListenButton" class="firstListenButton">✔</button>
+                    </p>
+                </div>
+            </div>
+    
+            <img src="../static/Images/MMTBS.png" alt="albumListened" class="albumListened">
+        </div>
+    
+        <div class="separator"></div>
+    
+        <div class="placeholderImage">Placeholder Image</div>
+    
+        <textarea id="notes" class="textarea" placeholder="Enter text here..."></textarea>
+        <button onclick="saveReview()">Save Review</button>
+    </div>
+
+    <script>
+        document.getElementById('dateListened').valueAsDate = new Date();
+    
+        function addReview() {
+            document.getElementById("newReview").style.display = "block"; 
+        }    
+    
+        function saveReview() {
+            const reviewData = {
+                albumName: document.getElementById("albumName").innerText,
+                artistName: document.getElementById("artistName").innerText,
+                averageRating: document.getElementById("averageRating").innerText,
+                dateListened: document.getElementById("dateListened").value,
+                firstListen: document.getElementById("firstListenButton").innerText,
+                notes: document.getElementById("notes").value
+            };
+    
+            fetch('/save_review', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ reviewData })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert("Review saved successfully!");
+                console.log(data);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        }
+    </script>
+    
 </body>
 </html>

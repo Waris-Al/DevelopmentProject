@@ -1,5 +1,5 @@
-from flask import Flask, render_template, url_for, request, redirect, session
-from database import registerUser, init_db, logUserIn
+from flask import Flask, render_template, url_for, request, redirect, session, jsonify
+from database import registerUser, init_db, logUserIn, addReview
 from dotenv import load_dotenv
 import os
 app = Flask(__name__)
@@ -53,6 +53,20 @@ def Register():
             return render_template('register.html', error="Registration failed, please try again.")
     
     return render_template('register.html')
+
+
+@app.route('/save_review', methods=['POST'])
+def save_review():
+    try:
+        userID = 4
+        data = request.json  
+        review = data.get("reviewData") 
+        
+        addReview(userID, review) 
+        
+        return jsonify({"message": "Review saved successfully!"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 
 if __name__ == "__main__":
