@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, request, redirect, session, jsonify
-from database import registerUser, init_db, logUserIn, addReview
+from database import registerUser, init_db, logUserIn, addReview, usersreviews
 from dotenv import load_dotenv
 import os
 app = Flask(__name__)
@@ -17,7 +17,19 @@ def index():
 
 @app.route('/Homepage')
 def Homepage():
-    return render_template("homepage.html")
+    reviews = usersreviews.query.filter_by(userid=4).all()
+
+    formatted_reviews = []
+    for review in reviews:
+        review_data = review.review_data
+        formatted_reviews.append({
+            'album_name': review_data.get('albumName', 'Unknown Album'),
+            'artist_name': review_data.get('artistName', 'Unknown Artist'),
+            'date_listened': review_data.get('dateListened', 'Unknown Date'),
+            'review': review_data.get('notes', 'No review available')
+        })
+        
+    return render_template("homepage.html", reviews=formatted_reviews)
 
 @app.route('/Login', methods=['GET', 'POST'])
 def Login():
@@ -58,7 +70,7 @@ def Register():
 @app.route('/save_review', methods=['POST'])
 def save_review():
     try:
-        userID = 4
+        userID = 4 #placeholder, change so that it uses the real one 
         data = request.json  
         review = data.get("reviewData") 
         

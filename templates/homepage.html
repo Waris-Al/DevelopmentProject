@@ -31,20 +31,15 @@
         <h1>Recent Reviews</h1>
         <table class="RecentReviews">
             <tbody>
+                {% for review in reviews %}
                 <tr>
-                    <td><img src="artist1.jpg" alt="Artist PFP"></td>
-                    <td>Album 1</td>
-                    <td>Artist 1</td>
-                    <td>2025-02-21</td>
-                    <td>Amazing album, loved every track!</td>
+                    <td><img src="{{ review.artist_name | replace(' ', '_') }}.jpg" alt="Artist PFP"></td>
+                    <td>{{ review.album_name }}</td>
+                    <td>{{ review.artist_name }}</td>
+                    <td>{{ review.date_listened }}</td>
+                    <td>{{ review.review }}</td>
                 </tr>
-                <tr>
-                    <td><img src="artist2.jpg" alt="Artist PFP"></td>
-                    <td>Album 2</td>
-                    <td>Artist 2</td>
-                    <td>2025-02-20</td>
-                    <td>Great production and lyrics.</td>
-                </tr>
+                {% endfor %}
             </tbody>
         </table>
         <button onclick="addReview()">Add Review</button>
@@ -55,9 +50,9 @@
     
         <div class="contentContainer">
             <div class="paragraphs">
-                <p id="albumName" class="albumName">Album Name</p>
-                <p id="artistName" class="artistName">Artist Name</p>
-                <p id="averageRating" class="averageRating">Average Rating</p>
+                <p id="albumName" class="albumName">GUTS</p>
+                <p id="artistName" class="artistName">Olivia Rodrigo</p>
+                <p id="averageRating" class="averageRating">5</p>
     
                 <label for="dateListened">Date Listened:</label>
                 <input type="date" id="dateListened" class="dateInput">
