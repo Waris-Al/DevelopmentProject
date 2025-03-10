@@ -1,0 +1,135 @@
+<script>
+    const clientId = "{{ spotifyClientID }}";
+    const clientSecret = "{{ spotifyClientSecret }}";
+
+
+    function saveReview() {
+        const reviewData = {
+            albumName: document.getElementById("albumName").innerText,
+            artistName: document.getElementById("artistName").innerText,
+            averageRating: document.getElementById("averageRating").innerText,
+            dateListened: document.getElementById("dateListened").value,
+            firstListen: document.getElementById("firstListenButton").innerText,
+            notes: document.getElementById("notes").value
+        };
+
+        fetch('/save_review', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ reviewData })
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert("Review saved successfully!");
+            console.log(data);
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
+    }
+
+    async function getAccessToken() {
+        const response = await fetch("https://accounts.spotify.com/api/token", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Authorization": "Basic " + btoa(clientId + ":" + clientSecret)
+            },
+            body: "grant_type=client_credentials"
+        });
+        const data = await response.json();
+        return data.access_token;
+    }
+
+    async function searchSpotify() {
+        const query = document.getElementById('searchBar').value.trim();
+        if (!query) return;
+
+        const token = await getAccessToken();
+        const response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=album`, {
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+
+        const albumInfo = await response.json();
+
+        const albumName = albumInfo.albums.items[0].name;
+        const artistName = albumInfo.albums.items[0].artists[0].name;
+        const albumURL = albumInfo.albums.items[0].images[0]?.url;
+
+        changeDetails(albumName, artistName, albumURL);
+
+        console.log(albumName);
+        console.log(artistName);
+        console.log(albumURL);
+
+    }
+
+    function changeDetails(albumName, artistName, albumURL) {
+        const thumbnail = document.querySelector('.albumListened'); 
+        thumbnail.src = albumURL;
+
+        const artist = document.getElementById('artistName');
+        artist.textContent = artistName;
+
+        const album = document.getElementById('albumName');
+        album.textContent = albumName;
+
+    }
+    
+
+
+    async function showTracks() {
+        const token = await getAccessToken();
+        const response = await fetch(`https://api.spotify.com/v1/albums/5oT7xqbRbQCevZ0XC5aBFu/tracks`, {
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+        const tracks = await response.json();
+        const trackNames = [];
+
+        for (let i=0; i < tracks.items.length; i++)
+        {
+            trackNames.push(tracks.items[i].name);
+        }
+
+        console.log(trackNames);
+    }
+
+    window.onload = function() {
+        const dateInput = document.getElementById('dateListened');
+        dateInput.valueAsDate = new Date();
+    };
+
+</script>
+
+
+<link href="../static/css/homepage.css" rel="stylesheet" type="text/css" />
+<input type="text" id="searchBar" class="searchBar" placeholder="Search...">
+<button onclick="searchSpotify()">Search</button>
+    
+<div class="contentContainer">
+    <div class="paragraphs">
+        <p id="albumName" class="albumName"></p>
+        <p id="artistName" class="artistName"> </p>
+        <p id="averageRating" class="averageRating">5</p>
+
+        <label for="dateListened">Date Listened:</label>
+        <input type="date" id="dateListened" class="dateInput">
+
+        <div class="firstListenContainer">
+            <p id="firstListen" class="firstListen">First Listen 
+                <button id="firstListenButton" class="firstListenButton">✔</button>
+            </p>
+        </div>
+    </div>
+
+    <img src="" id="albumListened" class="albumListened">
+</div>
+
+<div class="separator"></div>
+
+<div class="placeholderImage">Placeholder Image</div>
+
+<textarea id="notes" class="textarea" placeholder="Enter text here..."></textarea>
+<button onclick="saveReview()">Save Review</button>

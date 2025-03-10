@@ -51,6 +51,14 @@ button#firstListenButton {
     margin-left: 0;
 }
 
+iframe#newReview {
+    width: 100%;
+    position: absolute;
+    z-index: 3;
+    height: 100%;
+    background-color: #fbdbfb;
+}
+
 /* for mobile views */
 @media screen and (max-width: 768px) {
     img {
