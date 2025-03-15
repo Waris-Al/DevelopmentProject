@@ -3,6 +3,8 @@ from dotenv import load_dotenv
 import os
 from argon2 import PasswordHasher
 from sqlalchemy.dialects.postgresql import JSONB
+from datetime import datetime
+
 
 hasher = PasswordHasher()
 load_dotenv(dotenv_path='env/.env')
@@ -33,6 +35,53 @@ class usersreviews(db.Model):
 
     def __repr__(self):
         return f'<Review by {self.user.username}>'
+
+class conversations(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    senderid = db.Column(db.String(80), db.ForeignKey('my_discog_user.username'), nullable=False)
+    receiverid = db.Column(db.String(80), db.ForeignKey('my_discog_user.username'), nullable=False)
+    messages = db.Column(JSONB, nullable=False)
+    
+    sender = db.relationship('my_discog_user', foreign_keys=[senderid])  
+    receiver = db.relationship('my_discog_user', foreign_keys=[receiverid]) 
+    
+    def __repr__(self):
+        return f'<Conversations(senderID={self.senderID}, receiverID={self.receiverID})>'
+
+    
+
+def loadMessages(conversationID):
+    try:
+        conversation = conversations.query.get(conversationID)
+        
+        if conversation:
+            return conversation.messages
+        else:
+            return {"error": "Conversation not found"}
+    
+    except Exception as e:
+        return {"error": str(e)}
+    
+    
+def addMessage(conversationID, sender, message):
+    conversation = conversations.query.get(conversationID)
+    
+    if conversation:
+        previousMessages = conversation.messages or [] 
+        new_message = {
+            "sender": sender,
+            "message": message,
+            "timestamp": datetime.utcnow().isoformat()  
+        }
+        
+        previousMessages.append(new_message)
+        db.session.expire(conversation, ["messages"]) 
+        conversation.messages = previousMessages
+        db.session.commit()
+        
+        return "Message added"
+
+
 
 
 

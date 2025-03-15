@@ -1,9 +1,10 @@
 from flask import Flask, render_template, url_for, request, redirect, session, jsonify
-from database import registerUser, init_db, logUserIn, addReview, usersreviews
+from database import registerUser, init_db, logUserIn, addReview, usersreviews, loadMessages, addMessage
 from dotenv import load_dotenv
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import os
+from flask_socketio import SocketIO, send, emit
 app = Flask(__name__)
 
 #Stuff to load database
@@ -16,6 +17,8 @@ spotifyClientSecret = os.getenv("spotifyClientSecret")
 app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{os.getenv("dbMasterUsername")}:{os.getenv("dbMasterPassword")}@localhost/dbname'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 init_db(app)
+socketio = SocketIO(app)
+
 
 @app.route('/')
 def index():
@@ -140,6 +143,70 @@ def newReview():
 def test():
     return render_template("test.html", spotifyClientID=spotifyClientID, spotifyClientSecret=spotifyClientSecret)
 
+
+@app.route('/messageTest')
+def messageTest():
+    return render_template("messageTest.html")
+
+#change this so its using session variables, this works for testing for now
+AUTHORIZED_USERS = {'user1': 'password1', 'user2': 'password2'}
+connected_users = {}
+
+@socketio.on('message')
+def handle_message(msg):
+    print('Message: ' + msg)
+    send(msg, broadcast=True)
+    
+@socketio.on('connect')
+def handle_connect():
+    username = request.args.get('username')
+    password = request.args.get('password')
+    
+    # Check if the user is authorized
+    if username in AUTHORIZED_USERS and AUTHORIZED_USERS[username] == password:
+        connected_users[username] = request.sid  
+        print(f'{username} connected')
+    else:
+        print(f'Unauthorized access attempt from {username}')
+        handle_disconnect() 
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    for username, sid in connected_users.items():
+        if sid == request.sid:
+            print(f'{username} disconnected')
+            del connected_users[username]  
+
+@socketio.on('broadcast')
+def handle_broadcast_event(msg):
+    send(msg, broadcast=True)
+
+@socketio.on('custom_event')
+def handle_custom_event(data):
+    emit('response', {'data': 'Custom event received!'}, broadcast=True)
+
+@app.route("/was")
+def loadMessage():
+    conversation_id = 8 #change to session var
+    messages = loadMessages(conversation_id)
+    return messages
+
+
+
+@app.route("/wastest", methods=["POST"])
+def addMessages():
+    data = request.json 
+    message = data.get("message")
+
+    if not message:
+        return jsonify({"error": "No message provided"}),
+
+    response = addMessage(8, "user1", message)  #change to session vars
+    return jsonify({"status": "success", "message": message})  
+
+
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    socketio.run(app, debug=True)
+
 
