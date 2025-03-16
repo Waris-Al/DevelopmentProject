@@ -1,0 +1,10 @@
+input#message{
+    width: 94%;
+}
+
+.messages {
+    display: flex;
+    flex-direction: column-reverse;
+    overflow-y: scroll;
+    height: 700px;
+}

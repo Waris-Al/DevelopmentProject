@@ -5,6 +5,7 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import os
 from flask_socketio import SocketIO, send, emit
+from datetime import datetime
 app = Flask(__name__)
 
 #Stuff to load database
@@ -144,18 +145,29 @@ def test():
     return render_template("test.html", spotifyClientID=spotifyClientID, spotifyClientSecret=spotifyClientSecret)
 
 
-@app.route('/messageTest')
-def messageTest():
-    return render_template("messageTest.html")
+@app.route('/DM')
+def DM():
+    return render_template("DM.html")
 
 #change this so its using session variables, this works for testing for now
 AUTHORIZED_USERS = {'user1': 'password1', 'user2': 'password2'}
 connected_users = {}
 
+
 @socketio.on('message')
 def handle_message(msg):
-    print('Message: ' + msg)
-    send(msg, broadcast=True)
+    sender = "user x" #again set to session variable
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    message_data = {
+        "sender": sender,
+        "message": msg,
+        "timestamp": timestamp
+    }
+
+    print(f"Message from {sender}: {msg} at {timestamp}")
+    send(message_data, broadcast=True)
+
     
 @socketio.on('connect')
 def handle_connect():
@@ -185,7 +197,7 @@ def handle_broadcast_event(msg):
 def handle_custom_event(data):
     emit('response', {'data': 'Custom event received!'}, broadcast=True)
 
-@app.route("/was")
+@app.route("/retrieveMessages")
 def loadMessage():
     conversation_id = 8 #change to session var
     messages = loadMessages(conversation_id)
@@ -193,7 +205,7 @@ def loadMessage():
 
 
 
-@app.route("/wastest", methods=["POST"])
+@app.route("/recordMessage", methods=["POST"])
 def addMessages():
     data = request.json 
     message = data.get("message")
