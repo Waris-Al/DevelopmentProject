@@ -90,7 +90,7 @@ def Homepage():
 @app.route('/Login', methods=['GET', 'POST'])
 def Login():
     if request.method == "POST":
-        email = request.form['username']
+        email = request.form['email']
         password = request.form['password']
         
         success = logUserIn(email, password)
@@ -113,7 +113,7 @@ def Register():
         username = request.form['username']
         password = request.form['password']
         
-        success = registerUser(email, username, password)
+        success = registerUser(username, email, password)
         
         if success:
             return redirect(url_for('Login'))
