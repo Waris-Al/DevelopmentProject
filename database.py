@@ -27,14 +27,14 @@ class my_discog_user(db.Model):
 class usersreviews(db.Model):
     __tablename__ = 'usersreviews'
     
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    userid = db.Column(db.Integer, db.ForeignKey('my_discog_user.id', ondelete='CASCADE'), nullable=False)
-    review_data = db.Column(JSONB, nullable=False)
+    reviewid = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_email = db.Column(db.String, db.ForeignKey('my_discog_user.email', ondelete='CASCADE'), nullable=False)
+    review = db.Column(JSONB, nullable=False) 
     
     user = db.relationship('my_discog_user', backref='reviews')
 
     def __repr__(self):
-        return f'<Review by {self.user.username}>'
+        return f'<Review by {self.user.email}>'
 
 class conversations(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -98,23 +98,25 @@ def logUserIn(theirEmail, theirPassword):
 
     try:
         if user and hasher.verify(user.password, theirPassword): 
-            return True  
+            return user.username  
     except:
         pass  
 
     return False  
 
 
-def addReview(user_id, review_data):
-    user = my_discog_user.query.get(user_id)
+def addReview(user_email, review_data):
+    user = my_discog_user.query.filter_by(email=user_email).first()
     
     if user:
-        new_review = usersreviews(userid=user_id, review_data=review_data)
+        new_review = usersreviews(user_email=user_email, review=review_data)  # Removed reviewid, as it's auto-incrementing
         db.session.add(new_review)
         db.session.commit()
-        return f'Review added for user {user.username}'
+        return f'Review added for user {user.email}'
     
     return 'User not found!'
+
+
     #how to select JSON info
     #SELECT * 
     #FROM reviews 

@@ -73,11 +73,11 @@ def callback():
 
 @app.route('/Homepage')
 def Homepage():
-    reviews = usersreviews.query.filter_by(userid=4).all()
+    reviews = usersreviews.query.filter_by(user_email=session['email']).all()
 
     formatted_reviews = []
-    for review in reviews:
-        review_data = review.review_data
+    for userReview in reviews:
+        review_data = userReview.review
         formatted_reviews.append({
             'album_name': review_data.get('albumName', 'Unknown Album'),
             'artist_name': review_data.get('artistName', 'Unknown Artist'),
@@ -96,11 +96,15 @@ def Login():
         success = logUserIn(email, password)
         
         if success:
+            session['username'] = success
+            session['email'] = email
             session.pop('error', None)
+            print(session['username'])
             return redirect(url_for('Homepage'))
         else:
             session['error'] = "Invalid username or password"
             return redirect(url_for('Login')) 
+    
     
     error = session.pop('error', None)
     return render_template('login.html', error=error)
@@ -126,7 +130,7 @@ def Register():
 @app.route('/save_review', methods=['POST'])
 def save_review():
     try:
-        userID = 4 #placeholder, change so that it uses the real one 
+        userID = session['email']
         data = request.json  
         review = data.get("reviewData") 
         
@@ -156,7 +160,7 @@ connected_users = {}
 
 @socketio.on('message')
 def handle_message(msg):
-    sender = "user x" #again set to session variable
+    sender = session['username']
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     message_data = {
@@ -213,7 +217,7 @@ def addMessages():
     if not message:
         return jsonify({"error": "No message provided"}),
 
-    response = addMessage(8, "user1", message)  #change to session vars
+    response = addMessage(8, session['username'], message)  
     return jsonify({"status": "success", "message": message})  
 
 
