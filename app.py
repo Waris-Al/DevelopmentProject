@@ -73,19 +73,22 @@ def callback():
 
 @app.route('/Homepage')
 def Homepage():
-    reviews = usersreviews.query.filter_by(user_email=session['email']).all()
+    if session.get('email'):
+        reviews = usersreviews.query.filter_by(user_email=session['email']).all()
 
-    formatted_reviews = []
-    for userReview in reviews:
-        review_data = userReview.review
-        formatted_reviews.append({
-            'album_name': review_data.get('albumName', 'Unknown Album'),
-            'artist_name': review_data.get('artistName', 'Unknown Artist'),
-            'date_listened': review_data.get('dateListened', 'Unknown Date'),
-            'review': review_data.get('notes', 'No review available')
-        })
-        
-    return render_template("homepage.html", reviews=formatted_reviews)
+        formatted_reviews = []
+        for userReview in reviews:
+            review_data = userReview.review
+            formatted_reviews.append({
+                'album_name': review_data.get('albumName', 'Unknown Album'),
+                'artist_name': review_data.get('artistName', 'Unknown Artist'),
+                'date_listened': review_data.get('dateListened', 'Unknown Date'),
+                'review': review_data.get('notes', 'No review available')
+            })
+            
+        return render_template("homepage.html", reviews=formatted_reviews)
+    else:
+        return render_template("index.html")
 
 @app.route('/Login', methods=['GET', 'POST'])
 def Login():
@@ -108,6 +111,12 @@ def Login():
     
     error = session.pop('error', None)
     return render_template('login.html', error=error)
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('index')) 
+
 
 @app.route('/Register', methods=['GET', 'POST'])
 def Register():

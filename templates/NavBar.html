@@ -10,19 +10,23 @@
 
 <!-- Navbar -->
 <div class="navbar">
-  <!-- Left-aligned items -->
   <div class="left-items">
     <a class="Logo" href="/">
       <img src="../static/Images/Logo.png" alt="Logo" class="Logo">
     </a>
-    <a href="Login">Login</a>
-    <a href="Register">Register</a>
+    {% if 'email' not in session or not session['email'] %}
+      <a href="Login">Login</a>
+      <a href="Register">Register</a>
+    {% else %}
+      <a href="DM">DM</a>
+    {% endif %}
     <a href="Discover">Discover</a>
   </div>
 
-  <!-- Right-aligned items -->
   <div class="right-items">
-    <a href="#signup">Log Out</a>
+    {% if 'email' in session and session['email'] %}
+      <a href="logout">Log Out</a>
+    {% endif %}
   </div>
 </div>
 
