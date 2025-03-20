@@ -59,6 +59,18 @@ iframe#newReview {
     background-color: #fbdbfb;
 }
 
+iframe#newAlbum{
+    position: absolute;
+    z-index: 3;
+    height: 30%; 
+    background-color: #fbdbfb;
+}
+
+button.search{
+    position: relative; 
+    display: inline; 
+    margin-left: 0; 
+}
 /* for mobile views */
 @media screen and (max-width: 768px) {
     img {

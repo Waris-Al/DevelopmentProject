@@ -86,7 +86,7 @@ def Homepage():
                 'review': review_data.get('notes', 'No review available')
             })
             
-        return render_template("homepage.html", reviews=formatted_reviews)
+        return render_template("homepage.html", reviews=formatted_reviews, spotifyClientID=spotifyClientID, spotifyClientSecret=spotifyClientSecret)
     else:
         return render_template("index.html")
 
