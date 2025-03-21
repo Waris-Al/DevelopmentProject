@@ -1,9 +1,11 @@
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
 from dotenv import load_dotenv
 import os
 from argon2 import PasswordHasher
 from sqlalchemy.dialects.postgresql import JSONB
 from datetime import datetime
+import json
 
 
 hasher = PasswordHasher()
@@ -20,6 +22,7 @@ class my_discog_user(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), unique=False, nullable=False)
+    favourites = db.Column(JSONB)
 
     def __repr__(self):
         return f'<sas21 {self.username}>'
@@ -123,6 +126,30 @@ def addReview(user_email, review_data):
     #WHERE review_data->>'rating' = '5';
 
     
+def editFavourite(newFavourite, email, category):
+    user = my_discog_user.query.filter_by(email=email).with_entities(my_discog_user.favourites[category]).first()
+
+    if user:
+        my_discog_user.query.filter_by(email=email).update({
+            'favourites': func.jsonb_set(
+                my_discog_user.favourites,  
+                [category],                 
+                newFavourite,            
+                True                       
+            )
+        })
+        db.session.commit()
+
+        return True
+    else:
+        return False
 
 
+def loadFavourites(email):
+    user = my_discog_user.query.filter_by(email=email).with_entities(my_discog_user.favourites).first()
+    
+    if user:
+        return user[0]
+    else:
+        return None
 #need to do some actual database design but for now this works to show off the concept

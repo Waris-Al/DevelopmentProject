@@ -1,5 +1,5 @@
-from flask import Flask, render_template, url_for, request, redirect, session, jsonify
-from database import registerUser, init_db, logUserIn, addReview, usersreviews, loadMessages, addMessage
+from flask import Flask, render_template, url_for, request, redirect, session, jsonify, json
+from database import registerUser, init_db, logUserIn, addReview, usersreviews, loadMessages, addMessage, editFavourite, loadFavourites
 from dotenv import load_dotenv
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
@@ -86,7 +86,9 @@ def Homepage():
                 'review': review_data.get('notes', 'No review available')
             })
             
-        return render_template("homepage.html", reviews=formatted_reviews, spotifyClientID=spotifyClientID, spotifyClientSecret=spotifyClientSecret)
+        favourites = loadFavourites(session['email'])
+            
+        return render_template("homepage.html", reviews=formatted_reviews, spotifyClientID=spotifyClientID, spotifyClientSecret=spotifyClientSecret, favourites=favourites)
     else:
         return render_template("index.html")
 
@@ -161,6 +163,31 @@ def test():
 @app.route('/DM')
 def DM():
     return render_template("DM.html")
+
+
+
+
+@app.route('/changeFavourites', methods=['POST'])
+def changeFavourites():
+    data = request.get_json()
+
+    category = data.get('type')  
+    newName = data.get('name')  
+    newURL = data.get('imageURL') 
+
+    favourites_json = {
+        "name": newName,
+        "imageUrl": newURL
+    }
+    favouritesJSONString = json.dumps(favourites_json)
+    worked = editFavourite(favouritesJSONString, session['email'], category)
+
+    if worked:
+        return jsonify({"status": "success", "favourite": favourites_json})
+    else:
+        return jsonify({"status": "failure"})
+
+
 
 #change this so its using session variables, this works for testing for now
 AUTHORIZED_USERS = {'user1': 'password1', 'user2': 'password2'}
