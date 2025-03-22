@@ -1,0 +1,205 @@
+<script>
+    const clientId = "{{ spotifyClientID }}";
+    const clientSecret = "{{ spotifyClientSecret }}";
+
+
+    function saveReview() {
+        const reviewData = {
+            albumName: document.getElementById("albumName").innerText,
+            artistName: document.getElementById("artistName").innerText,
+            averageRating: document.getElementById("averageRating").innerText,
+            dateListened: document.getElementById("dateListened").value,
+            firstListen: document.getElementById("firstListenButton").innerText,
+            notes: document.getElementById("notes").value
+        };
+
+        fetch('/save_review', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ reviewData })
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert("Review saved successfully!");
+            console.log(data);
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
+    }
+
+    async function getAccessToken() {
+        const response = await fetch("https://accounts.spotify.com/api/token", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Authorization": "Basic " + btoa(clientId + ":" + clientSecret)
+            },
+            body: "grant_type=client_credentials"
+        });
+        const data = await response.json();
+        return data.access_token;
+    }
+
+    async function searchSpotify(type) {
+        let query = "";
+        if (type === "artist") {
+            query = document.getElementById("favouriteArtist").value.trim();
+        } else if (type === "track") {
+            query = document.getElementById("favouriteSong").value.trim();
+        } else if (type === "album") {
+            query = document.getElementById("favouriteAlbum").value.trim();
+        }
+
+        const token = await getAccessToken();
+        const response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=${type}`, {
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+
+        const searchInfo = await response.json();
+
+        if (type === "album" && searchInfo.albums && searchInfo.albums.items.length > 0) 
+        {
+            const album = searchInfo.albums.items[0];
+            console.log("Album Name:", album.name);
+            console.log("Album Image URL:", album.images.length > 0 ? album.images[0].url : "No image available");
+            document.getElementById('favouriteAlbumThumbnail').src=album.images[0].url;
+            document.getElementById('favouriteAlbumThumbnail').style.display="block";
+        } 
+        else if (type === "track" && searchInfo.tracks && searchInfo.tracks.items.length > 0) 
+        {
+            const track = searchInfo.tracks.items[0];
+            console.log("Track Name:", track.name);
+            console.log("Track Image URL:", track.album.images.length > 0 ? track.album.images[0].url : "No image available");
+            document.getElementById('favouriteSongThumbnail').src=track.album.images[0].url;
+            document.getElementById('favouriteSongThumbnail').style.display="block";
+        } 
+        else if (type === "artist" && searchInfo.artists && searchInfo.artists.items.length > 0) 
+        {
+            const artist = searchInfo.artists.items[0];
+            console.log("Artist Name:", artist.name);
+            console.log("Artist Image URL:", artist.images.length > 0 ? artist.images[0].url : "No image available");
+            document.getElementById('favouriteArtistThumbnail').src=artist.images[0].url;
+            document.getElementById('favouriteArtistThumbnail').style.display="block";
+        } 
+        else 
+        {
+            console.log("No results found for", type);
+        }
+
+    }
+
+    async function setFavourites() {
+        const favouriteSong = {
+            name: document.getElementById("favouriteSong").value.trim(),
+            imageUrl: document.getElementById("favouriteSongThumbnail").src
+        };
+    
+        const favouriteAlbum = {
+            name: document.getElementById("favouriteAlbum").value.trim(),
+            imageUrl: document.getElementById("favouriteAlbumThumbnail").src
+        };
+    
+        const favouriteArtist = {
+            name: document.getElementById("favouriteArtist").value.trim(),
+            imageUrl: document.getElementById("favouriteArtistThumbnail").src
+        };
+    
+        if (!favouriteSong.name || favouriteSong.imageUrl === "" ||
+            !favouriteAlbum.name || favouriteAlbum.imageUrl === "" ||
+            !favouriteArtist.name || favouriteArtist.imageUrl === "") {
+            alert("Error: Please select a favourite song, album, and artist before saving.");
+            return;
+        }
+    
+        const favouritesData = { favouriteSong, favouriteAlbum, favouriteArtist };
+    
+        
+            const response = await fetch('/setFavourites', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(favouritesData)
+            });
+    
+            if (response.ok) {
+                alert("Favourites saved successfully!");
+                console.log(await response.json());
+            } else {
+                alert("Error saving favourites.");
+                console.error("Server response:", await response.text());
+            }
+        
+    }
+    
+
+</script>
+
+
+<style>
+    .searchContainer {
+        display: flex;
+        justify-content: space-around;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .searchBox {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .searchBar {
+        margin-bottom: 10px;
+        padding: 5px;
+    }
+
+    img {
+        display: none;
+        width: 200px;
+        height: 200px;
+        object-fit: cover;
+        margin-bottom: 10px;
+    }
+
+    button {
+        padding: 5px 10px;
+        cursor: pointer;
+    }
+
+    button.confirm {
+        display: flex;
+        position: absolute;
+        margin-top: 350px;
+    }
+</style>
+
+<div class="searchContainer">
+    <div class="searchBox">
+        <label for="favouriteArtist">Favourite Artist:</label>
+        <input type="text" id="favouriteArtist" class="searchBar" placeholder="Search artist...">
+        <img src="" id="favouriteArtistThumbnail">
+        <button onclick="searchSpotify('artist')">Search</button>
+    </div>
+
+    <div class="searchBox">
+        <label for="favouriteSong">Favourite Song:</label>
+        <input type="text" id="favouriteSong" class="searchBar" placeholder="Search song...">
+        <img src="" id="favouriteSongThumbnail">
+        <button onclick="searchSpotify('track')">Search</button>
+    </div>
+
+    <div class="searchBox">
+        <label for="favouriteAlbum">Favourite Album:</label>
+        <input type="text" id="favouriteAlbum" class="searchBar" placeholder="Search album...">
+        <img src="" id="favouriteAlbumThumbnail">
+        <button onclick="searchSpotify('album')">Search</button>
+    </div>
+
+    <button class="confirm" onclick="setFavourites()">Confirm</button>
+</div>
+

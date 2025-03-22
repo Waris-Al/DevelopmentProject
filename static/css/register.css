@@ -59,3 +59,11 @@ body
     }
   }
 }
+
+iframe#setFavourites {
+  left: -67%;
+  position: relative;
+  width: 701px;
+  height: 388px;
+  border: none;
+}

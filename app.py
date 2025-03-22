@@ -122,13 +122,14 @@ def logout():
 
 @app.route('/Register', methods=['GET', 'POST'])
 def Register():
-    if request.method == 'POST':
+    if request.method == 'POST' and session['favourites'] != None:
         email = request.form['email']
         name = request.form['name']
         username = request.form['username']
         password = request.form['password']
+        favourites = session['favourites']
         
-        success = registerUser(username, email, password)
+        success = registerUser(username, email, password, favourites)
         
         if success:
             return redirect(url_for('Login'))
@@ -186,6 +187,15 @@ def changeFavourites():
         return jsonify({"status": "success", "favourite": favourites_json})
     else:
         return jsonify({"status": "failure"})
+    
+    
+@app.route('/setFavourites', methods=['GET', 'POST'])
+def setFavourites():
+    if request.method == 'POST':
+        session['favourites'] = request.json
+        print(session['favourites'])
+    
+    return render_template("setFavourites.html", spotifyClientID=spotifyClientID, spotifyClientSecret=spotifyClientSecret)
 
 
 

@@ -88,9 +88,9 @@ def addMessage(conversationID, sender, message):
 
 
 
-def registerUser(inputtedusername, theirEmail, theirpassword):
+def registerUser(inputtedusername, theirEmail, theirpassword, favourites):
     theirpassword = hasher.hash(theirpassword)
-    new_user = my_discog_user(username=inputtedusername, email=theirEmail, password=theirpassword)
+    new_user = my_discog_user(username=inputtedusername, email=theirEmail, password=theirpassword, favourites=favourites)
     db.session.add(new_user)
     db.session.commit()
     return f'User {new_user.username} created!'
