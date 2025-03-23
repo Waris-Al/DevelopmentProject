@@ -6,6 +6,8 @@ from spotipy.oauth2 import SpotifyOAuth
 import os
 from flask_socketio import SocketIO, send, emit
 from datetime import datetime
+import requests
+import base64
 app = Flask(__name__)
 
 #Stuff to load database
@@ -166,6 +168,76 @@ def DM():
     return render_template("DM.html")
 
 
+
+
+@app.route('/searchSpotify', methods=['POST'])
+def searchSpotify():
+    data = request.get_json()
+    query = data.get('query')
+    search_type = data.get('type')
+
+    client_credentials = f"{spotifyClientID}:{spotifyClientSecret}"
+    encoded_credentials = base64.b64encode(client_credentials.encode('utf-8')).decode('utf-8')
+
+    headers = {
+        "Authorization": f"Basic {encoded_credentials}",
+        "Content-Type": "application/x-www-form-urlencoded"
+    }
+
+    token_data = {
+        "grant_type": "client_credentials"
+    }
+
+    token_response = requests.post("https://accounts.spotify.com/api/token", data=token_data, headers=headers)
+
+    if token_response.status_code != 200:
+        return jsonify({"error": "Error fetching access token from Spotify"}), 500
+
+    token_info = token_response.json()
+    access_token = token_info.get('access_token')
+
+    if not access_token:
+        return jsonify({"error": "Access token not found"}), 500
+
+    search_headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    params = {
+        "q": query,
+        "type": search_type,
+        "limit": 1 
+    }
+
+    search_response = requests.get("https://api.spotify.com/v1/search", headers=search_headers, params=params)
+
+    if search_response.status_code != 200:
+        return jsonify({"error": "Error fetching data from Spotify", "message": search_response.json()}), 500
+
+    search_info = search_response.json()
+    if search_type == 'album' and search_info.get('albums', {}).get('items'):
+        album = search_info['albums']['items'][0]
+        return jsonify({
+            'type': 'favouriteAlbum',
+            'name': album['name'],
+            'imageURL': album['images'][0]['url']
+        })
+    elif search_type == 'track' and search_info.get('tracks', {}).get('items'):
+        song = search_info['tracks']['items'][0]
+        return jsonify({
+            'type': 'favouriteSong',
+            'name': song['name'],
+            'imageURL': song['album']['images'][0]['url']
+        })
+    elif search_type == 'artist' and search_info.get('artists', {}).get('items'):
+        artist = search_info['artists']['items'][0]
+        return jsonify({
+            'type': 'favouriteArtist',
+            'name': artist['name'],
+            'imageURL': artist['images'][0]['url']
+        })
+    else:
+        return jsonify({"error": f"No {search_type} found for the query"}), 404
 
 
 @app.route('/changeFavourites', methods=['POST'])
