@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify Favorites</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .favorite-item {
+            margin-bottom: 20px;
+        }
+        .favorite-item img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+        }
+        .favorite-item h3 {
+            font-size: 20px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            width: 200px;
+            margin-right: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-right: 20px;
+        }
+        .reviews-list {
+            margin-top: 20px;
+        }
+        .review-item {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Spotify Favorite Updater</h1>
+
+    <div class="favorite-item">
+        <input type="text" id="albumQuery" placeholder="Enter album name" />
+        <button onclick="editFavourite(document.getElementById('albumQuery').value, 'album')">Search</button>
+        <div>
+            <h3 id="FavouriteAlbumName">Album Name</h3>
+            <img id="FavouriteAlbumImage" src="" alt="Album Image" />
+        </div>
+    </div>
+
+    <div class="reviews-list" id="reviewsList">
+        <h2>Reviews</h2>
+    </div>
+
+    <script>
+        async function editFavourite(query, type) {
+            const response = await fetch('/searchSpotify', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    query: query,
+                    type: type
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.error) {
+                console.error(result.error);
+                return;
+            }
+
+            const name = result.name;
+            const imageURL = result.imageURL;
+
+            document.getElementById('FavouriteAlbumName').innerText = name;
+            document.getElementById('FavouriteAlbumImage').src = imageURL;
+
+            const reviews = await fetch('/searchReviews', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: name
+                })
+            });
+
+            const reviewsResult = await reviews.json();
+            const reviewsListElement = document.getElementById('reviewsList');
+            reviewsListElement.innerHTML = '<h2>Reviews</h2>';
+
+            reviewsResult.forEach((item) => {
+                const reviewElement = document.createElement('div');
+                reviewElement.classList.add('review-item');
+                reviewElement.innerHTML = `<strong>Email:</strong> ${item.user_email} <br> <strong>Notes:</strong> ${item.review.notes}`;
+                reviewsListElement.appendChild(reviewElement);
+            });
+        }
+    </script>
+
+</body>
+</html>

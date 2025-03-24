@@ -152,4 +152,21 @@ def loadFavourites(email):
         return user[0]
     else:
         return None
+    
+
+def searchReviews(searchTerm):
+    try:
+        results = usersreviews.query.filter(
+            usersreviews.review['albumName'].astext == searchTerm
+        ).all()
+
+        if results:
+            return [{"review_id": review.reviewid, "user_email": review.user_email, "review": review.review} for review in results]
+        else:
+            return {"message": "No reviews found for the album name."}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+
 #need to do some actual database design but for now this works to show off the concept

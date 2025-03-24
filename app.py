@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, request, redirect, session, jsonify, json
-from database import registerUser, init_db, logUserIn, addReview, usersreviews, loadMessages, addMessage, editFavourite, loadFavourites
+from database import registerUser, init_db, logUserIn, addReview, usersreviews, loadMessages, addMessage, editFavourite, loadFavourites, searchReviews
 from dotenv import load_dotenv
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
@@ -76,6 +76,7 @@ def callback():
 @app.route('/Homepage')
 def Homepage():
     if session.get('email'):
+        #move this into the DB file
         reviews = usersreviews.query.filter_by(user_email=session['email']).all()
 
         formatted_reviews = []
@@ -166,6 +167,15 @@ def test():
 @app.route('/DM')
 def DM():
     return render_template("DM.html")
+
+
+@app.route('/searchReviews', methods=['POST'])
+def searchReviews():
+    data = request.json
+    searchTerm = data.get("name") 
+    reviews = searchReviews(searchTerm)
+    return jsonify(reviews)  
+
 
 
 
