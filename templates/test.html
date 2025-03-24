@@ -1,130 +1,111 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spotify Search</title>
-    <script>
-
-        function genreGetter() {
-            let albumName = "chromakopia";//document.getElementById("albumName").innerText;
-            let artistName = "tyler, the creator"; //document.getElementById("artistName").innerText;
-    
-            let encodedAlbum = encodeURIComponent(albumName);
-            let encodedArtist = encodeURIComponent(artistName);
-    
-            fetch(`https://musicbrainz.org/ws/2/release-group/?query=release:${encodedAlbum}%20AND%20artist:${encodedArtist}&fmt=json`)
-                .then(response => response.json())
-                .then(data => {
-                    let tagsSet = new Set(); // Use a Set to store unique tags
-            
-                    data["release-groups"]?.forEach(group => {
-                        group.tags?.forEach(tag => {
-                            if (tag.count > 0) { 
-                                tagsSet.add(tag.name);
-                            }
-                        });
-                    });
-            
-                    if (tagsSet.size > 0) {
-                        console.log("Tags:", [...tagsSet]);
-                    } else {
-                        console.log("No tags available.");
-                    }
-                })
-                .catch(error => console.error("Error fetching data:", error));
-    
-            return true;
-        
+    <title>Spotify Favorites</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
         }
-
-
-
-
-        const clientId = "{{ spotifyClientID }}";
-        const clientSecret = "{{ spotifyClientSecret }}";
-
-        async function getAccessToken() {
-            const response = await fetch("https://accounts.spotify.com/api/token", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                    "Authorization": "Basic " + btoa(clientId + ":" + clientSecret)
-                },
-                body: "grant_type=client_credentials"
-            });
-            const data = await response.json();
-            return data.access_token;
+        .favorite-item {
+            margin-bottom: 20px;
         }
-
-        async function searchSpotify() {
-            const query = document.getElementById("search").value;
-            if (!query) return;
-
-            const token = await getAccessToken();
-            const response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=album`, {
-                headers: { "Authorization": `Bearer ${token}` }
-            });
-
-            const data = await response.json();
-            displayResults(data);
+        .favorite-item img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
         }
-
-
-        async function showTracks() {
-            const token = await getAccessToken();
-            const response = await fetch(`https://api.spotify.com/v1/albums/5oT7xqbRbQCevZ0XC5aBFu/tracks`, {
-                headers: { "Authorization": `Bearer ${token}` }
-            });
-            const tracks = await response.json();
-            const trackNames = [];
-
-            for (let i=0; i < tracks.items.length; i++)
-            {
-                trackNames.push(tracks.items[i].name);
-            }
-
-            console.log(trackNames);
+        .favorite-item h3 {
+            font-size: 20px;
         }
-
-        function displayResults(data) {
-            const resultsDiv = document.getElementById("results");
-            resultsDiv.innerHTML = "";
-
-            if (data.albums) {
-                data.albums.items.forEach(album => {
-                    const albumElement = document.createElement("div");
-                    albumElement.innerHTML = `
-                        <p><strong>${album.name}</strong> by ${album.artists.map(artist => artist.name).join(", ")}</p>
-                        <button onclick="showDetails('${album.id}')">Show Details</button>
-                        <div id="details-${album.id}"></div>
-                        <hr>
-                    `;
-                    resultsDiv.appendChild(albumElement);
-                });
-            }
+        input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            width: 200px;
+            margin-right: 10px;
         }
-
-        async function showDetails(albumId) {
-            const token = await getAccessToken();
-            const response = await fetch(`https://api.spotify.com/v1/albums/${albumId}`, {
-                headers: { "Authorization": `Bearer ${token}` }
-            });
-            
-            const album = await response.json();
-            const detailsDiv = document.getElementById(`details-${album.id}`);
-            detailsDiv.innerHTML = `
-                <img src="${album.images[0].url}" alt="${album.name}" width="200">
-                <p>Release Date: ${album.release_date}</p>
-            `;
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-right: 20px;
         }
-    </script>
+        .reviews-list {
+            margin-top: 20px;
+        }
+        .review-item {
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Spotify Search</h1>
-    <input type="text" id="search" placeholder="Search for albums...">
-    <button onclick="searchSpotify()">Search</button>
-    <div id="results"></div>
 
-    <button onclick="genreGetter()">dsfsdfsd</button>
+    <h1>Spotify Favorite Updater</h1>
+
+    <div class="favorite-item">
+        <h2>Search and Set Favorite Album</h2>
+        <input type="text" id="albumQuery" placeholder="Enter album name" />
+        <button onclick="editFavourite(document.getElementById('albumQuery').value, 'album')">Set Favorite Album</button>
+        <div>
+            <h3 id="FavouriteAlbumName">Album Name</h3>
+            <img id="FavouriteAlbumImage" src="" alt="Album Image" />
+        </div>
+    </div>
+
+    <div class="reviews-list" id="reviewsList">
+        <h2>Reviews</h2>
+    </div>
+
+    <script>
+        async function editFavourite(query, type) {
+            const response = await fetch('/searchSpotify', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    query: query,
+                    type: type
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.error) {
+                console.error(result.error);
+                return;
+            }
+
+            const name = result.name;
+            const imageURL = result.imageURL;
+
+            document.getElementById('FavouriteAlbumName').innerText = name;
+            document.getElementById('FavouriteAlbumImage').src = imageURL;
+
+            const reviews = await fetch('/searchReviews', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: name
+                })
+            });
+
+            const reviewsResult = await reviews.json();
+            const reviewsListElement = document.getElementById('reviewsList');
+            reviewsListElement.innerHTML = '<h2>Reviews</h2>';
+
+            reviewsResult.forEach((item) => {
+                const reviewElement = document.createElement('div');
+                reviewElement.classList.add('review-item');
+                reviewElement.innerHTML = `<strong>Email:</strong> ${item.user_email} <br> <strong>Notes:</strong> ${item.review.notes}`;
+                reviewsListElement.appendChild(reviewElement);
+            });
+        }
+    </script>
+
 </body>
 </html>

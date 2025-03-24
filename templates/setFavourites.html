@@ -3,32 +3,7 @@
     const clientSecret = "{{ spotifyClientSecret }}";
 
 
-    function saveReview() {
-        const reviewData = {
-            albumName: document.getElementById("albumName").innerText,
-            artistName: document.getElementById("artistName").innerText,
-            averageRating: document.getElementById("averageRating").innerText,
-            dateListened: document.getElementById("dateListened").value,
-            firstListen: document.getElementById("firstListenButton").innerText,
-            notes: document.getElementById("notes").value
-        };
 
-        fetch('/save_review', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ reviewData })
-        })
-        .then(response => response.json())
-        .then(data => {
-            alert("Review saved successfully!");
-            console.log(data);
-        })
-        .catch(error => {
-            console.error("Error:", error);
-        });
-    }
 
     async function getAccessToken() {
         const response = await fetch("https://accounts.spotify.com/api/token", {
