@@ -154,7 +154,7 @@ def loadFavourites(email):
         return None
     
 
-def searchReviews(searchTerm):
+def searchFor(searchTerm):
     try:
         results = usersreviews.query.filter(
             usersreviews.review['albumName'].astext == searchTerm
