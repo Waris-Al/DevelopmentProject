@@ -134,7 +134,8 @@ def test():
 def searchReviews():
     data = request.json
     searchTerm = data.get("name") 
-    reviews = searchFor(searchTerm)
+    searchType = data.get("searchType")
+    reviews = searchFor(searchTerm, searchType)
     return jsonify(reviews)  
 
 

@@ -154,19 +154,24 @@ def loadFavourites(email):
         return None
     
 
-def searchFor(searchTerm):
-    try:
+def searchFor(searchTerm, searchType):
+    if searchType == "album":
         results = usersreviews.query.filter(
             usersreviews.review['albumName'].astext == searchTerm
-        ).all()
+                ).all()
 
         if results:
             return [{"review_id": review.reviewid, "user_email": review.user_email, "review": review.review} for review in results]
         else:
             return {"message": "No reviews found for the album name."}
-    except Exception as e:
-        return {"error": str(e)}
-
+    if searchType == "user":
+        users = my_discog_user.query.filter_by(username=searchTerm).first()
+        
+        
+        if users:
+            return users.username
+        else:
+            return "No users found"
 
 
 #need to do some actual database design but for now this works to show off the concept
