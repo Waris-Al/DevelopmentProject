@@ -8,29 +8,12 @@
         body {
             font-family: Arial, sans-serif;
             padding: 20px;
+            
         }
-        .favorite-item {
-            margin-bottom: 20px;
-        }
-        .favorite-item img {
-            width: 150px;
-            height: 150px;
-            object-fit: cover;
-        }
-        .favorite-item h3 {
-            font-size: 20px;
-        }
-        input[type="text"] {
+        input, select, button {
             padding: 10px;
             font-size: 16px;
-            width: 200px;
             margin-right: 10px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-right: 20px;
         }
         .reviews-list {
             margin-top: 20px;
@@ -41,64 +24,48 @@
     </style>
 </head>
 <body>
-
-    <h1>Spotify Favorite Updater</h1>
-
-    <div class="favorite-item">
-        <h2>Search and Set Favorite Album</h2>
-        <input type="text" id="albumQuery" placeholder="Enter album name" />
-        <button onclick="editFavourite(document.getElementById('albumQuery').value, 'album')">Set Favorite Album</button>
-        <div>
-            <h3 id="FavouriteAlbumName">Album Name</h3>
-            <img id="FavouriteAlbumImage" src="" alt="Album Image" />
-        </div>
-    </div>
-
+    <h1>Spotify Search</h1>
+    <input type="text" id="searchQuery" placeholder="Enter name" />
+    <select id="searchType">
+        <option value="album">Album</option>
+        <option value="user">user</option>
+    </select>
+    <button onclick="searchSpotify()">Search</button>
+    <div id="result"></div>
     <div class="reviews-list" id="reviewsList">
         <h2>Reviews</h2>
     </div>
-
     <script>
-        async function editFavourite(query, type) {
-            const response = await fetch('/searchSpotify', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    query: query,
-                    type: type
-                })
-            });
-
-            const result = await response.json();
-
-            if (result.error) {
-                console.error(result.error);
-                return;
+        async function searchSpotify() {
+            const query = document.getElementById('searchQuery').value;
+            const type = document.getElementById('searchType').value;
+            let name = query;
+            let imageURL = "";
+            
+            if (type === 'album') {
+                const response = await fetch('/searchSpotify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query, type })
+                });
+                const result = await response.json();
+                if (result.error) return;
+                name = result.name;
+                imageURL = result.imageURL;
             }
-
-            const name = result.name;
-            const imageURL = result.imageURL;
-
-            document.getElementById('FavouriteAlbumName').innerText = name;
-            document.getElementById('FavouriteAlbumImage').src = imageURL;
-
+            
+            document.getElementById('result').innerHTML = `<h3>${name}</h3><img src="${imageURL}" alt="Image" />`;
+            
+            const searchType = type;
             const reviews = await fetch('/searchReviews', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    name: name
-                })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, searchType })
             });
-
             const reviewsResult = await reviews.json();
             const reviewsListElement = document.getElementById('reviewsList');
             reviewsListElement.innerHTML = '<h2>Reviews</h2>';
-
-            reviewsResult.forEach((item) => {
+            reviewsResult.forEach(item => {
                 const reviewElement = document.createElement('div');
                 reviewElement.classList.add('review-item');
                 reviewElement.innerHTML = `<strong>Email:</strong> ${item.user_email} <br> <strong>Notes:</strong> ${item.review.notes}`;
@@ -106,6 +73,5 @@
             });
         }
     </script>
-
 </body>
 </html>
