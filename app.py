@@ -20,7 +20,8 @@ app.secret_key = os.getenv("app.secret_key")
 spotifyClientID = os.getenv("spotifyClientID")
 spotifyClientSecret = os.getenv("spotifyClientSecret")
 
-app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{os.getenv("dbMasterUsername")}:{os.getenv("dbMasterPassword")}@localhost/dbname'
+#app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{os.getenv("dbMasterUsername")}:{os.getenv("dbMasterPassword")}@localhost/dbname'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{os.getenv("dbMasterUsername")}:{os.getenv("dbMasterPassword")}@{os.getenv("dbHost")}/{os.getenv("dbName")}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 init_db(app)
 socketio.init_app(app)
