@@ -20,9 +20,18 @@ app.secret_key = os.getenv("app.secret_key")
 spotifyClientID = os.getenv("spotifyClientID")
 spotifyClientSecret = os.getenv("spotifyClientSecret")
 
-#app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{os.getenv("dbMasterUsername")}:{os.getenv("dbMasterPassword")}@localhost/dbname'
-app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{os.getenv("dbMasterUsername")}:{os.getenv("dbMasterPassword")}@{os.getenv("dbHost")}/{os.getenv("dbName")}'
+
+
+db_username = os.getenv("DB_USERNAME")
+db_password = os.getenv("DB_PASSWORD")
+db_host = os.getenv("DB_HOST")
+db_name = os.getenv("DB_NAME")
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{db_username}:{db_password}@{db_host}/{db_name}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+
+
 init_db(app)
 socketio.init_app(app)
 app.register_blueprint(spotifyAuthBP)
