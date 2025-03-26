@@ -14,7 +14,7 @@ messagingRoutes = Blueprint('messagingRoutes', __name__)
 
 @messagingRoutes.route('/DM')
 def DM():
-    return render_template("DM.html")
+    return render_template("dm.html")
 
 
 #change this so its using session variables, this works for testing for now
