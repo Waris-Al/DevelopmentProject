@@ -1,0 +1,9 @@
+Flask
+Flask-SQLAlchemy
+Flask-SocketIO
+python-dotenv
+spotipy
+requests
+argon2-cffi
+SQLAlchemy
+psycopg2-binary
