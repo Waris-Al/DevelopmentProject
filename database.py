@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import func
+from sqlalchemy import func, desc, text
 from dotenv import load_dotenv
 import os
 from argon2 import PasswordHasher
@@ -173,5 +173,21 @@ def searchFor(searchTerm, searchType):
         else:
             return "No users found"
 
+def mostRecentReview(email):
+    latest_review = usersreviews.query.filter_by(user_email=email)\
+            .order_by(desc(text("CAST(review->>'dateListened' AS TIMESTAMP)")))\
+            .first()
+    formatted_review = None
+    if latest_review:
+        review_data = latest_review.review
+        formatted_review = {
+            'album_name': review_data.get('albumName', 'Unknown Album'),
+            'artist_name': review_data.get('artistName', 'Unknown Artist'),
+            'date_listened': review_data.get('dateListened', 'Unknown Date'),
+            'review': review_data.get('notes', 'No review available')
+            }
+    return formatted_review
+
+ 
 
 #need to do some actual database design but for now this works to show off the concept

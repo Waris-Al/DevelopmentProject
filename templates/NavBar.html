@@ -19,6 +19,15 @@
       <a href="Register">Register</a>
     {% else %}
       <a href="DM">DM</a>
+      <div class="search-bar">
+        <input type="text" id="searchQuery" placeholder="Enter name">
+        <select id="searchType">
+          <option value="album">Album</option>
+          <option value="user">User</option>
+        </select>
+        <button onclick="searchUserOrMedia()">🔍</button>
+        <div id="searchDropdown" class="dropdown"></div> 
+      </div>
     {% endif %}
     <a href="Discover">Discover</a>
   </div>
@@ -29,6 +38,43 @@
     {% endif %}
   </div>
 </div>
-
+<script>
+  async function searchUserOrMedia() {
+      const query = document.getElementById('searchQuery').value;
+      const type = document.getElementById('searchType').value;
+      let name = query;
+      let imageURL = "";
+      
+      if (type === 'album') {
+          const response = await fetch('/searchUserOrMedia', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ query, type })
+          });
+          const result = await response.json();
+          if (result.error) return;
+          name = result.name;
+          imageURL = result.imageURL;
+      }
+      
+      document.getElementById('result').innerHTML = `<h3>${name}</h3><img src="${imageURL}" alt="Image" />`;
+      
+      const searchType = type;
+      const reviews = await fetch('/searchReviews', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, searchType })
+      });
+      const reviewsResult = await reviews.json();
+      const reviewsListElement = document.getElementById('reviewsList');
+      reviewsListElement.innerHTML = '<h2>Reviews</h2>';
+      reviewsResult.forEach(item => {
+          const reviewElement = document.createElement('div');
+          reviewElement.classList.add('review-item');
+          reviewElement.innerHTML = `<strong>Email:</strong> ${item.user_email} <br> <strong>Notes:</strong> ${item.review.notes}`;
+          reviewsListElement.appendChild(reviewElement);
+      });
+  }
+</script>
 </body>
 </html>

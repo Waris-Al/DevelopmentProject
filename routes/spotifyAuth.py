@@ -1,10 +1,12 @@
 from flask import render_template, url_for, request, redirect, session, jsonify, json, Blueprint
-from database import editFavourite
+from database import editFavourite, mostRecentReview
 from dotenv import load_dotenv
 from spotipy.oauth2 import SpotifyOAuth
 import os
 import requests
 import base64
+from datetime import datetime
+import time
 
 #Stuff to load database
 load_dotenv(dotenv_path='env/.env')
@@ -21,7 +23,7 @@ spotifyAuthBP = Blueprint('spotifyAuth', __name__)
 REDIRECT_URI = "http://127.0.0.1:5000/callback" 
 
 
-SCOPE = "user-top-read user-read-playback-state user-read-currently-playing"
+SCOPE = "user-top-read user-read-playback-state user-read-currently-playing user-read-recently-played"
 
 
 
@@ -55,13 +57,74 @@ def callback():
             return "Error: Failed to retrieve access token from Spotify. Try logging in again."
 
         session["token_info"] = token_info
-        return redirect(url_for("top_artist"))
+        return redirect(url_for("test"))
 
     except Exception as e:
         print("Spotify Token Error:", str(e))
         return f"Error: {str(e)}"
 
 
+
+@spotifyAuthBP.route('/test2')
+def test2():
+    latestReview = mostRecentReview(session['email'])
+    mostRecentListen = latestReview['album_name']
+    
+    token_info = session.get("token_info")
+    if not token_info or "access_token" not in token_info:
+        return redirect(url_for("spotifyAuthBP.callback"))
+
+    access_token = token_info["access_token"]
+
+    search_headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    current_timestamp_ms = int(time.time() * 1000)
+    params = {
+        "before": current_timestamp_ms,
+        "limit": 50
+    }
+
+    search_response = requests.get("https://api.spotify.com/v1/me/player/recently-played", headers=search_headers, params=params)
+
+    if search_response.status_code == 204:  
+        return jsonify({"message": "No recently played tracks found."})
+
+    if search_response.status_code != 200:
+        return jsonify({"error": "Error fetching data from Spotify", "status_code": search_response.status_code}), 500
+
+    try:
+        data = search_response.json()
+    except requests.exceptions.JSONDecodeError:
+        return jsonify({"error": "Invalid JSON response from Spotify"}), 500
+
+    recent_tracks = []
+    for item in data.get("items", []):
+        track = item["track"]
+        artist_name = ", ".join([artist["name"] for artist in track["artists"]]) 
+        album_name = track["album"]["name"]
+        context_type = item["context"]["type"] if item.get("context") else "Unknown"
+        played_at = item["played_at"]
+
+        played_at_dt = datetime.strptime(played_at, "%Y-%m-%dT%H:%M:%S.%fZ")
+        played_at_str = played_at_dt.strftime("%Y-%m-%d %H:%M:%S")
+
+        if context_type != "playlist" and not any(track['albumName'] == album_name for track in recent_tracks):
+            if album_name == mostRecentListen:
+                break
+            recent_tracks.append({
+                "notes": "",
+                "albumName": album_name,
+                "artistName": artist_name,
+                "firstListen": "",  
+                "dateListened": played_at_str,
+                "averageRating": "" 
+            })
+
+    autoLogged = recent_tracks[0]
+    session['review_json'] = autoLogged
+    return redirect(url_for('save_review'))
 
 
 
