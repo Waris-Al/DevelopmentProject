@@ -5,6 +5,10 @@
 <html>
 <body>
     <div class="registerDetails">
+        {% if error %}
+            <p style="color: red;">{{ error }}</p>
+        {% endif %}
+    
         <form method="POST" action="/Register">
             <label for="email">Email Address:</label><br>
             <input type="email" id="email" name="email" required><br><br>
@@ -23,6 +27,7 @@
     
             <input type="submit" value="Register">
         </form>  
+
     </div>
 </body>
 </html>

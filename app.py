@@ -99,7 +99,10 @@ def logout():
 
 @app.route('/Register', methods=['GET', 'POST'])
 def Register():
-    if request.method == 'POST' and session['favourites'] != None:
+    if session.get('favourites') is None:
+        session['error'] = "Registration failed, please select favourites"
+        
+    elif request.method == 'POST' and session.get('favourites') is not None:
         email = request.form['email']
         name = request.form['name']
         username = request.form['username']
@@ -109,11 +112,12 @@ def Register():
         success = registerUser(username, email, password, favourites)
         
         if success:
+            session.pop('error', None)
             return redirect(url_for('Login'))
         else:
-            return render_template('register.html', error="Registration failed, please try again.")
-    
-    return render_template('register.html')
+            return render_template('register.html', error=session.get('error')) 
+
+    return render_template('register.html', error=session.get('error'))
 
 
 @app.route('/save_review', methods=['POST'])
