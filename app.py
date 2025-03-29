@@ -28,6 +28,7 @@ db_host = os.getenv("DB_HOST")
 db_name = os.getenv("DB_NAME")
 
 app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{db_username}:{db_password}@{db_host}/{db_name}'
+#app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{os.getenv("dbMasterUsername")}:{os.getenv("dbMasterPassword")}@localhost/dbname'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
@@ -120,13 +121,17 @@ def Register():
     return render_template('register.html', error=session.get('error'))
 
 
-@app.route('/save_review', methods=['POST'])
+@app.route('/save_review', methods=['GET', 'POST'])
 def save_review():
     try:
         userID = session['email']
-        data = request.json  
-        review = data.get("reviewData") 
         
+        if request.method == "POST":
+            data = request.json
+            review = data.get("reviewData")
+        else:
+            review = session['review_json']
+            
         addReview(userID, review) 
         
         return jsonify({"message": "Review saved successfully!"}), 200
