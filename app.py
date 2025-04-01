@@ -73,7 +73,7 @@ def Homepage():
 @app.route('/Login', methods=['GET', 'POST'])
 def Login():
     if request.method == "POST":
-        email = request.form['email']
+        email = request.form['email'].lower()
         password = request.form['password']
         
         success = logUserIn(email, password)
@@ -104,9 +104,9 @@ def Register():
         session['error'] = "Registration failed, please select favourites"
         
     elif request.method == 'POST' and session.get('favourites') is not None:
-        email = request.form['email']
+        email = request.form['email'].lower()
         name = request.form['name']
-        username = request.form['username']
+        username = request.form['username'].lower()
         password = request.form['password']
         favourites = session['favourites']
         
