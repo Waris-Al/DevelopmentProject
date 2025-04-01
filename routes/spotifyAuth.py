@@ -20,7 +20,9 @@ spotifyClientSecret = os.getenv("spotifyClientSecret")
 spotifyAuthBP = Blueprint('spotifyAuth', __name__)
 
 
-REDIRECT_URI = "http://127.0.0.1:5000/callback" 
+#REDIRECT_URI = "http://127.0.0.1:5000/callback"
+REDIRECT_URI = "https://developmentproject.onrender.com/callback "
+
 
 
 SCOPE = "user-top-read user-read-playback-state user-read-currently-playing user-read-recently-played"
