@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, request, redirect, session, jsonify, json
-from database import registerUser, init_db, logUserIn, addReview, usersreviews, loadMessages, addMessage, editFavourite, loadFavourites, searchFor
+from database import registerUser, init_db, logUserIn, addReview, usersreviews, loadMessages, addMessage, editFavourite, loadFavourites, searchFor, findUser
 from dotenv import load_dotenv
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
@@ -152,14 +152,23 @@ def test():
 @app.route('/searchReviews', methods=['POST'])
 def searchReviews():
     data = request.json
-    searchTerm = data.get("name") 
-    searchType = data.get("searchType")
-    reviews = searchFor(searchTerm, searchType)
-    return jsonify(reviews)  
+    searchTerm = data.get("query") 
+    reviews = searchFor(searchTerm)
+    
+    return jsonify(reviews) #get this displayed in a dropdown on the page
 
 
 
-
+@app.route('/searchUser', methods=['POST'])
+def searchUserOrMedia():
+    data = request.json
+    query = data.get("query")
+    users = findUser(query)
+    
+    if users:
+        return users
+    else:
+        return "No users found" # make sure to pass this back so it displays on html
 
 
 if __name__ == "__main__":

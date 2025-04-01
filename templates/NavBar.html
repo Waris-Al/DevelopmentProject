@@ -39,41 +39,35 @@
   </div>
 </div>
 <script>
-  async function searchUserOrMedia() {
-      const query = document.getElementById('searchQuery').value;
-      const type = document.getElementById('searchType').value;
-      let name = query;
-      let imageURL = "";
-      
-      if (type === 'album') {
-          const response = await fetch('/searchUserOrMedia', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ query, type })
-          });
-          const result = await response.json();
-          if (result.error) return;
-          name = result.name;
-          imageURL = result.imageURL;
-      }
-      
-      document.getElementById('result').innerHTML = `<h3>${name}</h3><img src="${imageURL}" alt="Image" />`;
-      
-      const searchType = type;
-      const reviews = await fetch('/searchReviews', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, searchType })
-      });
-      const reviewsResult = await reviews.json();
-      const reviewsListElement = document.getElementById('reviewsList');
-      reviewsListElement.innerHTML = '<h2>Reviews</h2>';
-      reviewsResult.forEach(item => {
-          const reviewElement = document.createElement('div');
-          reviewElement.classList.add('review-item');
-          reviewElement.innerHTML = `<strong>Email:</strong> ${item.user_email} <br> <strong>Notes:</strong> ${item.review.notes}`;
-          reviewsListElement.appendChild(reviewElement);
-      });
+
+  async function searchUser(query) {
+    const response = await fetch('/searchUser', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query })
+    });
+  }
+
+  async function searchAlbum(query) {
+    const response = await fetch('/searchReviews', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query })
+    });
+  }
+
+  function searchUserOrMedia() {
+    type = document.getElementById('searchType').value;
+    query = document.getElementById('searchQuery').value;
+
+    if (type == "album")
+    {
+      searchAlbum(query);
+    }
+    else
+    {
+      searchUser(query);
+    }
   }
 </script>
 </body>

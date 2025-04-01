@@ -154,24 +154,17 @@ def loadFavourites(email):
         return None
     
 
-def searchFor(searchTerm, searchType):
-    if searchType == "album":
-        results = usersreviews.query.filter(
-            usersreviews.review['albumName'].astext == searchTerm
-                ).all()
+def searchFor(searchTerm):
+    results = usersreviews.query.filter(
+        usersreviews.review['albumName'].astext == searchTerm
+        ).all()
 
-        if results:
-            return [{"review_id": review.reviewid, "user_email": review.user_email, "review": review.review} for review in results]
-        else:
-            return {"message": "No reviews found for the album name."}
-    if searchType == "user":
-        users = my_discog_user.query.filter_by(username=searchTerm).first()
-        
-        
-        if users:
-            return users.username
-        else:
-            return "No users found"
+    if results:
+        return [{"review_id": review.reviewid, "user_email": review.user_email, "review": review.review} for review in results]
+    else:
+        return {"message": "No reviews found for the album name."}
+
+
 
 def mostRecentReview(email):
     latest_review = usersreviews.query.filter_by(user_email=email)\
@@ -188,6 +181,21 @@ def mostRecentReview(email):
             }
     return formatted_review
 
+def findUser(username):
+    user = my_discog_user.query.filter_by(username=username).first()
+    
+    if user:
+        user_info = {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'password': user.password,
+            'favourites': user.favourites  
+        }
+        return user_info
+    else:
+        return False
+    
  
 
 #need to do some actual database design but for now this works to show off the concept
