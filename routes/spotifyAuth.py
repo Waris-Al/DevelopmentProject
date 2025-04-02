@@ -124,9 +124,12 @@ def test2():
                 "averageRating": "" 
             })
 
-    autoLogged = recent_tracks[0]
-    session['review_json'] = autoLogged
-    return redirect(url_for('save_review'))
+    if recent_tracks:
+        autoLogged = recent_tracks[0]
+        session['review_json'] = autoLogged
+        return redirect(url_for('save_review'))
+    else:
+        return "No recently played albums"
 
 
 
