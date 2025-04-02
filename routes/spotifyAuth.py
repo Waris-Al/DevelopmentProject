@@ -21,7 +21,7 @@ spotifyAuthBP = Blueprint('spotifyAuth', __name__)
 
 
 #REDIRECT_URI = "http://127.0.0.1:5000/callback"
-REDIRECT_URI = "https://developmentproject.onrender.com/callback "
+REDIRECT_URI = "https://developmentproject.onrender.com/callback"
 
 
 
