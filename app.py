@@ -134,6 +134,10 @@ def save_review():
             
         addReview(userID, review) 
         
+        if session['autologgedReviews']:
+            session.pop('autologgedReviews', None)
+            return redirect(url_for('Homepage'))
+        
         return jsonify({"message": "Review saved successfully!"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 400

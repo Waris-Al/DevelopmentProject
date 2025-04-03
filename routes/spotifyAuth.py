@@ -127,6 +127,7 @@ def test2():
     if recent_tracks:
         autoLogged = recent_tracks[0]
         session['review_json'] = autoLogged
+        session['autologgedReviews'] = True
         return redirect(url_for('save_review'))
     else:
         return "No recently played albums"
