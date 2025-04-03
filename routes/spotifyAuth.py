@@ -189,11 +189,11 @@ def searchSpotify():
             'imageURL': album['images'][0]['url']
         })
     elif search_type == 'track' and search_info.get('tracks', {}).get('items'):
-        song = search_info['tracks']['items'][0]
+        track = search_info['tracks']['items'][0]
         return jsonify({
-            'type': 'favouriteSong',
-            'name': song['name'],
-            'imageURL': song['album']['images'][0]['url']
+            'type': 'favouriteTrack',
+            'name': track['name'],
+            'imageURL': track['album']['images'][0]['url']
         })
     elif search_type == 'artist' and search_info.get('artists', {}).get('items'):
         artist = search_info['artists']['items'][0]

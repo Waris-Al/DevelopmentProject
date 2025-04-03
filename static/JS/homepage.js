@@ -25,8 +25,8 @@ async function editFavourite(query, type) {
         document.getElementById('FavouriteAlbumName').innerText = name;
         document.getElementById('FavouriteAlbumImage').src = imageURL;
     } else if (type === 'track') {
-        document.getElementById('FavouriteSongName').innerText = name;
-        document.getElementById('FavouriteSongImage').src = imageURL;
+        document.getElementById('FavouriteTrackName').innerText = name;
+        document.getElementById('FavouriteTrackImage').src = imageURL;
     } else if (type === 'artist') {
         document.getElementById('FavouriteArtistName').innerText = name;
         document.getElementById('FavouriteArtistImage').src = imageURL;
@@ -103,8 +103,8 @@ function capitalizeFirstLetter(word) {
         document.getElementById('FavouriteArtistName').textContent = userFavourites.favouriteArtist.name;
         document.getElementById('FavouriteArtistImage').src = userFavourites.favouriteArtist.imageUrl;  
     
-        document.getElementById('FavouriteSongName').textContent = userFavourites.favouriteSong.name;
-        document.getElementById('FavouriteSongImage').src = userFavourites.favouriteSong.imageUrl;  
+        document.getElementById('FavouriteTrackName').textContent = userFavourites.favouriteTrack.name;
+        document.getElementById('FavouriteTrackImage').src = userFavourites.favouriteTrack.imageUrl;  
     }
     
     

@@ -23,7 +23,7 @@
         if (type === "artist") {
             query = document.getElementById("favouriteArtist").value.trim();
         } else if (type === "track") {
-            query = document.getElementById("favouriteSong").value.trim();
+            query = document.getElementById("favouriteTrack").value.trim();
         } else if (type === "album") {
             query = document.getElementById("favouriteAlbum").value.trim();
         }
@@ -48,8 +48,8 @@
             const track = searchInfo.tracks.items[0];
             console.log("Track Name:", track.name);
             console.log("Track Image URL:", track.album.images.length > 0 ? track.album.images[0].url : "No image available");
-            document.getElementById('favouriteSongThumbnail').src=track.album.images[0].url;
-            document.getElementById('favouriteSongThumbnail').style.display="block";
+            document.getElementById('favouriteTrackThumbnail').src=track.album.images[0].url;
+            document.getElementById('favouriteTrackThumbnail').style.display="block";
         } 
         else if (type === "artist" && searchInfo.artists && searchInfo.artists.items.length > 0) 
         {
@@ -67,9 +67,9 @@
     }
 
     async function setFavourites() {
-        const favouriteSong = {
-            name: document.getElementById("favouriteSong").value.trim(),
-            imageUrl: document.getElementById("favouriteSongThumbnail").src
+        const favouriteTrack = {
+            name: document.getElementById("favouriteTrack").value.trim(),
+            imageUrl: document.getElementById("favouriteTrackThumbnail").src
         };
     
         const favouriteAlbum = {
@@ -82,14 +82,14 @@
             imageUrl: document.getElementById("favouriteArtistThumbnail").src
         };
     
-        if (!favouriteSong.name || favouriteSong.imageUrl === "" ||
+        if (!favouriteTrack.name || favouriteTrack.imageUrl === "" ||
             !favouriteAlbum.name || favouriteAlbum.imageUrl === "" ||
             !favouriteArtist.name || favouriteArtist.imageUrl === "") {
             alert("Error: Please select a favourite song, album, and artist before saving.");
             return;
         }
     
-        const favouritesData = { favouriteSong, favouriteAlbum, favouriteArtist };
+        const favouritesData = { favouriteTrack, favouriteAlbum, favouriteArtist };
     
         
             const response = await fetch('/setFavourites', {
@@ -162,9 +162,9 @@
     </div>
 
     <div class="searchBox">
-        <label for="favouriteSong">Favourite Song:</label>
-        <input type="text" id="favouriteSong" class="searchBar" placeholder="Search song...">
-        <img src="" id="favouriteSongThumbnail">
+        <label for="favouriteTrack">Favourite Song:</label>
+        <input type="text" id="favouriteTrack" class="searchBar" placeholder="Search song...">
+        <img src="" id="favouriteTrackThumbnail">
         <button onclick="searchSpotify('track')">Search</button>
     </div>
 
