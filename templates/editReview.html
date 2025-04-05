@@ -1,0 +1,50 @@
+<div id="review_section">
+    <p>Artist: <span id="artist_name_display" style="display:none;"></span><input type="text" id="artist_name"></p>
+    <p>Album: <span id="album_name_display" style="display:none;"></span><input type="text" id="album_name"></p>
+    <p>Date Listened: <span id="date_listened_display" style="display:none;"></span><input type="date" id="date_listened"></p>
+    <p>Review: <span id="review_display" style="display:none;"></span><textarea id="review"></textarea></p>
+    <p>Rating: <span id="rating_display" style="display:none;"></span><input type="number" id="rating" min="1" max="5"></p>
+    <button id="save_button">Save</button>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const currentReview = JSON.parse(localStorage.getItem('currentReview'));
+
+        if (currentReview) {
+            ['artist_name', 'album_name', 'date_listened', 'review', 'rating'].forEach(id => {
+                document.getElementById(id).value = currentReview[id] || '';
+                document.getElementById(`${id}_display`).textContent = currentReview[id] || '';
+            });
+        }
+
+
+        document.getElementById('save_button').addEventListener('click', function () {
+            const fields = ['artist_name', 'album_name', 'date_listened', 'review', 'rating'];
+
+
+            const review = {};
+            fields.forEach(field => {
+                review[field] = document.getElementById(field).value;
+            });
+
+
+
+            const response = fetch('/editReview', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(review)
+            });
+            
+            fields.forEach(field => {
+                const value = document.getElementById(field).value;
+                document.getElementById(`${field}_display`).textContent = value;
+                document.getElementById(field).style.display = 'none';
+                document.getElementById(`${field}_display`).style.display = 'inline';
+            });
+            localStorage.clear();
+        });
+    });
+</script>

@@ -5,6 +5,7 @@ import os
 from argon2 import PasswordHasher
 from sqlalchemy.dialects.postgresql import JSONB
 from datetime import datetime
+from sqlalchemy.ext.mutable import MutableDict
 import json
 
 
@@ -32,7 +33,7 @@ class usersreviews(db.Model):
     
     reviewid = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_email = db.Column(db.String, db.ForeignKey('my_discog_user.email', ondelete='CASCADE'), nullable=False)
-    review = db.Column(JSONB, nullable=False) 
+    review = db.Column(MutableDict.as_mutable(JSONB), nullable=False)
     
     user = db.relationship('my_discog_user', backref='reviews')
 
@@ -196,6 +197,16 @@ def findUser(username):
     else:
         return False
     
- 
+def editReview(dateListened, reviewNotes, reviewID):
+    review = usersreviews.query.filter_by(reviewid=reviewID).first()
+    
+    print(review.review['notes'])
+    if review:
+        review.review['dateListened'] = dateListened
+        review.review['notes'] = reviewNotes
+        db.session.commit()
+        return True
+    else:
+        return False
 
 #need to do some actual database design but for now this works to show off the concept

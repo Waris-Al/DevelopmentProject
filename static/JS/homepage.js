@@ -94,6 +94,10 @@ function capitalizeFirstLetter(word) {
         document.getElementById("newReview").style.display = "block";
     }
 
+    function editReview(currentReview) {
+        document.getElementById("editReview").style.display = "block";
+        localStorage.setItem('currentReview', JSON.stringify(currentReview));
+    }
     
 
     window.onload = function() {

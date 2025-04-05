@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, request, redirect, session, jsonify, json
-from database import registerUser, init_db, logUserIn, addReview, usersreviews, loadMessages, addMessage, editFavourite, loadFavourites, searchFor, findUser
+from database import registerUser, init_db, logUserIn, addReview, usersreviews, loadFavourites, searchFor, findUser, editReview
 from dotenv import load_dotenv
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
@@ -46,7 +46,24 @@ def index():
 
 
 
+@app.route('/editReview', methods=['GET', 'POST'])
+def editUserReview():
+        
+    if request.method == 'POST':
+        data = request.json
+        review = data.get("review")
+        dateListened = data.get("dateListened")
+        
 
+        
+        editedReview = editReview(dateListened, review, 28) #use teh actual id
+        
+        if editedReview:
+            print("Review edited successfully")
+
+    else:
+        return render_template("editReview.html")
+    return "hi"
 
 @app.route('/Homepage')
 def Homepage():

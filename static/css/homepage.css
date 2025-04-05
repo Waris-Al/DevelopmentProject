@@ -71,6 +71,17 @@ button.search{
     display: inline; 
     margin-left: 0; 
 }
+
+
+.borderEditButton
+{
+    border: none !important;
+}
+
+button.editButton {
+    position: relative;
+    margin-left: 0;
+}
 /* for mobile views */
 @media screen and (max-width: 768px) {
     img {

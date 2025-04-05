@@ -13,6 +13,7 @@
     <div class="Homepage">
         <h1>My Favourites</h1>
         <iframe id="newReview" src="newReview" class="newReview" style="display:none"></iframe>
+        <iframe id="editReview" src="editReview" class="editReview" style="display:none"></iframe>
         <div class="topThree">
             <div id="FavouriteAlbum" class="FavouriteAlbum"> 
                 <p id="FavouriteAlbumName"></p>
@@ -45,6 +46,7 @@
                     <td>{{ review.artist_name }}</td>
                     <td>{{ review.date_listened }}</td>
                     <td>{{ review.review }}</td>
+                    <td class="borderEditButton"><button onclick='editReview({{ review | tojson }})' class="editButton">Edit</button></td>
                 </tr>
                 {% endfor %}
             </tbody>
