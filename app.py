@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, request, redirect, session, jsonify, json
-from database import registerUser, init_db, logUserIn, addReview, usersreviews, loadFavourites, searchFor, findUser, editReview
+from database import registerUser, init_db, logUserIn, addReview, usersreviews, loadFavourites, searchFor, findUser, editReview, deleteReview
 from dotenv import load_dotenv
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
@@ -45,6 +45,21 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/deleteReview', methods=['POST'])
+def deleteUserReview():
+        
+    if request.method == 'POST':
+        data = request.json
+        reviewID = data.get("review_id")
+        
+        deletedReview = deleteReview(reviewID)
+        
+        if deletedReview:
+            print("Review deleted successfully")
+            
+    else:
+        return render_template("deleteReview.html")
+    return "hi"
 
 @app.route('/editReview', methods=['GET', 'POST'])
 def editUserReview():
@@ -52,11 +67,12 @@ def editUserReview():
     if request.method == 'POST':
         data = request.json
         review = data.get("review")
-        dateListened = data.get("dateListened")
+        dateListened = data.get("date_listened")
+        reviewID = data.get("review_id")
         
 
         
-        editedReview = editReview(dateListened, review, 28) #use teh actual id
+        editedReview = editReview(dateListened, review, reviewID)
         
         if editedReview:
             print("Review edited successfully")
@@ -75,6 +91,7 @@ def Homepage():
         for userReview in reviews:
             review_data = userReview.review
             formatted_reviews.append({
+                'review_id': userReview.reviewid,
                 'album_name': review_data.get('albumName', 'Unknown Album'),
                 'artist_name': review_data.get('artistName', 'Unknown Artist'),
                 'date_listened': review_data.get('dateListened', 'Unknown Date'),

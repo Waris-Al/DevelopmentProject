@@ -3,23 +3,48 @@
         const currentReview = JSON.parse(localStorage.getItem('currentReview'));
 
         if (currentReview) {
-            ['artist_name', 'album_name', 'date_listened', 'review', 'rating'].forEach(id => {
+            ['artist_name', 'album_name', 'date_listened', 'review', 'rating', 'review_id'].forEach(id => {
                 document.getElementById(id).value = currentReview[id] || '';
                 document.getElementById(`${id}_display`).textContent = currentReview[id] || '';
             });
         }
 
 
+        document.getElementById('deleteButton').addEventListener('click', function () {
+            const fields = ['artist_name', 'album_name', 'date_listened', 'review', 'rating', 'review_id'];
+
+            const review = {};
+            fields.forEach(field => {
+                review[field] = document.getElementById(field).value;
+            });
+            
+            const response = fetch('/deleteReview', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(review)
+            });
+            
+            fields.forEach(field => {
+                const value = document.getElementById(field).value;
+                document.getElementById(`${field}_display`).textContent = value;
+                document.getElementById(field).style.display = 'none';
+                document.getElementById(`${field}_display`).style.display = 'inline';
+            });
+            localStorage.clear();
+            window.parent.location.href = 'Homepage';
+        });
+
         document.getElementById('save_button').addEventListener('click', function () {
-            const fields = ['artist_name', 'album_name', 'date_listened', 'review', 'rating'];
+            const fields = ['artist_name', 'album_name', 'date_listened', 'review', 'rating', 'review_id'];
 
 
             const review = {};
             fields.forEach(field => {
                 review[field] = document.getElementById(field).value;
             });
-
-
+            
 
             const response = fetch('/editReview', {
                 method: 'POST',
@@ -48,5 +73,9 @@
     <p>Date Listened: <span id="date_listened_display" style="display:none;"></span><input type="date" id="date_listened"></p>
     <p>Review: <span id="review_display" style="display:none;"></span><textarea id="review"></textarea></p>
     <p>Rating: <span id="rating_display" style="display:none;"></span><input type="number" id="rating" min="1" max="5"></p>
+    <div id="reviewid">
+        <p><span id="review_id_display"></span><input type="text" id="review_id" style="display:none;"></p>
+    </div>
     <button id="save_button">Save</button>
+    <button id="deleteButton">Delete</button>
 </div>

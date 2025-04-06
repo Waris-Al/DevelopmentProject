@@ -199,8 +199,7 @@ def findUser(username):
     
 def editReview(dateListened, reviewNotes, reviewID):
     review = usersreviews.query.filter_by(reviewid=reviewID).first()
-    
-    print(review.review['notes'])
+    print(reviewID)
     if review:
         review.review['dateListened'] = dateListened
         review.review['notes'] = reviewNotes
@@ -209,4 +208,13 @@ def editReview(dateListened, reviewNotes, reviewID):
     else:
         return False
 
+def deleteReview(reviewID):
+    review = usersreviews.query.filter_by(reviewid=reviewID).first()
+    
+    if review:
+        db.session.delete(review)
+        db.session.commit()
+        return True
+    else:
+        return False
 #need to do some actual database design but for now this works to show off the concept
