@@ -51,7 +51,7 @@ button#firstListenButton {
     margin-left: 0;
 }
 
-iframe#newReview {
+iframe#newReview, iframe#editReview {
     width: 100%;
     position: absolute;
     z-index: 3;

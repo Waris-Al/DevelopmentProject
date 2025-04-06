@@ -23,6 +23,7 @@
         .then(response => response.json())
         .then(data => {
             alert("Review saved successfully!");
+            window.parent.location.href = 'Homepage'; 
             console.log(data);
         })
         .catch(error => {

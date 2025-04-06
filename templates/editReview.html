@@ -1,12 +1,3 @@
-<div id="review_section">
-    <p>Artist: <span id="artist_name_display" style="display:none;"></span><input type="text" id="artist_name"></p>
-    <p>Album: <span id="album_name_display" style="display:none;"></span><input type="text" id="album_name"></p>
-    <p>Date Listened: <span id="date_listened_display" style="display:none;"></span><input type="date" id="date_listened"></p>
-    <p>Review: <span id="review_display" style="display:none;"></span><textarea id="review"></textarea></p>
-    <p>Rating: <span id="rating_display" style="display:none;"></span><input type="number" id="rating" min="1" max="5"></p>
-    <button id="save_button">Save</button>
-</div>
-
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const currentReview = JSON.parse(localStorage.getItem('currentReview'));
@@ -45,6 +36,17 @@
                 document.getElementById(`${field}_display`).style.display = 'inline';
             });
             localStorage.clear();
+            window.parent.location.href = 'Homepage';
         });
     });
 </script>
+
+
+<div id="review_section">
+    <p>Artist: <span id="artist_name_display" style="display:none;"></span><input type="text" id="artist_name"></p>
+    <p>Album: <span id="album_name_display" style="display:none;"></span><input type="text" id="album_name"></p>
+    <p>Date Listened: <span id="date_listened_display" style="display:none;"></span><input type="date" id="date_listened"></p>
+    <p>Review: <span id="review_display" style="display:none;"></span><textarea id="review"></textarea></p>
+    <p>Rating: <span id="rating_display" style="display:none;"></span><input type="number" id="rating" min="1" max="5"></p>
+    <button id="save_button">Save</button>
+</div>
