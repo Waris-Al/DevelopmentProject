@@ -11,6 +11,7 @@ import base64
 from routes.spotifyAuth import spotifyAuthBP
 from routes.messaging import messagingRoutes
 from routes.socketSetUp import socketio
+from routes.recommendations import recommendationAlgorithm
 app = Flask(__name__)
 
 #Stuff to load database
@@ -37,6 +38,7 @@ init_db(app)
 socketio.init_app(app)
 app.register_blueprint(spotifyAuthBP)
 app.register_blueprint(messagingRoutes)
+app.register_blueprint(recommendationAlgorithm)
 
 
 

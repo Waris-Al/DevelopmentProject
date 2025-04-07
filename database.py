@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import func, desc, text
+from sqlalchemy import func, desc, text, or_
 from dotenv import load_dotenv
 import os
 from argon2 import PasswordHasher
@@ -217,4 +217,29 @@ def deleteReview(reviewID):
         return True
     else:
         return False
-#need to do some actual database design but for now this works to show off the concept
+
+
+def highestRatedAlbums(email):
+    reviews = usersreviews.query.filter(usersreviews.user_email == email, or_(usersreviews.review['averageRating'].astext == '5', usersreviews.review['averageRating'].astext == '4')).all()
+    
+    topRatedAlbums = []
+    for result in reviews:
+        review_data = result.review 
+        
+        topRatedAlbums.append(review_data.get('albumName', 'Unknown Album'))
+
+    return topRatedAlbums
+
+def allListenedAlbums(email):
+    reviews = usersreviews.query.filter(usersreviews.user_email == email).all()
+    
+    allListenedAlbums = []
+    for result in reviews:
+        review_data = result.review 
+        albumName = review_data.get('albumName', 'Unknown Album')
+        
+        if albumName not in allListenedAlbums: 
+            allListenedAlbums.append(albumName)
+
+    return allListenedAlbums
+        
