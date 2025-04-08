@@ -3,6 +3,7 @@ from database import highestRatedAlbums, allListenedAlbums
 from dotenv import load_dotenv
 import os
 import requests
+import random
 
 
 load_dotenv(dotenv_path='env/.env') #Access env variables
@@ -15,8 +16,7 @@ recommendationAlgorithm = Blueprint('recommendationAlgorithm', __name__)
 
 
 lastFMKey = os.getenv("lastFMKey")
-albumToSearch = "LIFE IN HELL"
-artistName = "Lancey Foux"
+
 
 
 '''
@@ -28,36 +28,63 @@ To avoid the same recommendations constantly, the algorithm uses randomness with
 @recommendationAlgorithm.route('/testingRn')
 def testingRn():
     
+    #WARIS: WE'RE MAKING MULTIPLE API CALLS, DO NOT KEEP IT LIKE THIS, EITHER RUN THEM CONCURRENTLY OR FIND ANOTHER WAY
+    
+    usersListeningHistory = allListenedAlbums('mavsfan4l@test.com') 
+    listOfGenres = {}
     #Getting the users highly rated albums, and a list of all the albums they've listened to to avoid duplicates in recommendation
-    usersTopRatedAlbums = highestRatedAlbums('shouldsave@bugfix.com') #we may need to add randomness to this too
-    usersListeningHistory = allListenedAlbums('mavsfan4l@test.com')  
+    usersTopRatedAlbums = highestRatedAlbums('mavsfan4l@test.com') #we may need to add randomness to this too
     
-    #make everything lowercase whilst comparing to avoid discrepancies between lastfm and spotify
-    #next steps:
-    #randomise an attribute and page number
-    #grab album rec
-    #move to next tag
-    #stop at 4th
-    #return all 4, embedd spotify link to the album
-    
-    #Using the lastFM API to get an the genres (called tags on the API) of the albums the user has rated highly, and then getting albums in these genres
-    getAlbumGenres = f'https://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key={lastFMKey}&artist={artistName}&album={albumToSearch}&format=json'
+    for album in usersTopRatedAlbums:
+        albumToSearch = album[0] 
+        artistName = album[1]
+        #print(album[0])
+        #print(album[1])
 
-    relevantGenres = requests.get(getAlbumGenres)
-    tagName = "" #tags are genres
-    for tag in relevantGenres.json()['album']['tags']['tag']:
-        tagName = tag['name']
-        print(tagName)
+        #make everything lowercase whilst comparing to avoid discrepancies between lastfm and spotify
+        #next steps:
+        #randomise an attribute and page number
+        #grab album rec
+        #move to next tag
+        #stop at 4th
+        #return all 4, embedd spotify link to the album
+        
+        #Using the lastFM API to get an the genres (called tags on the API) of the albums the user has rated highly, and then getting albums in these genres
+        getAlbumGenres = f'https://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key={lastFMKey}&artist={artistName}&album={albumToSearch}&format=json' #change how this is done, too many API calls rn
 
-    similarAlbums = f'https://ws.audioscrobbler.com/2.0/?method=tag.gettopalbums&tag={tagName}&api_key={lastFMKey}&format=json&limit=50&page=1'
-    
-    
+        relevantGenres = requests.get(getAlbumGenres)
+        
+        tagName = "" #tags are genres
+        for tag in relevantGenres.json()['album']['tags']['tag']:
+            tagName = tag['name']
+            
+            if tagName in listOfGenres:
+                listOfGenres[tagName] += 1
+            else:  
+                listOfGenres[tagName] = 1
+                
+        
+    sortedGenreList = sorted(listOfGenres.items(), key=lambda item: item[1], reverse=True)
+    print("List of Genres: ", sortedGenreList)
     
 
-    #Here we check to make sure the albums we're recommending haven't been heard before
-    foundRecs = requests.get(similarAlbums)
-    for album in foundRecs.json()['albums']['album']:
-        if album['name'] not in usersListeningHistory:
+
+    for i in range(4):
+        tagToSearchWith = sortedGenreList[i][0]
+        #print("Tag to search with: ", tagToSearchWith)
+        similarAlbums = f'https://ws.audioscrobbler.com/2.0/?method=tag.gettopalbums&tag={tagToSearchWith}&api_key={lastFMKey}&format=json&limit=50&page=1'
+        
+        
+        #album['@attr']['rank'] == '2'
+        #Here we check to make sure the albums we're recommending haven't been heard before
+        foundRecs = requests.get(similarAlbums)
+        albumToRandomlyRecommend = random.randrange(1,50)
+        
+            
+        album = foundRecs.json()['albums']['album'][albumToRandomlyRecommend]
+
+        # Check if it hasn't been listened to and the rank matches
+        if album['name'] not in usersListeningHistory and album['@attr']['rank'] == str(albumToRandomlyRecommend + 1):
             print(album['name'] + " by " + album['artist']['name'])
     
   

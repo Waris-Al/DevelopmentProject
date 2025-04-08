@@ -226,7 +226,7 @@ def highestRatedAlbums(email):
     for result in reviews:
         review_data = result.review 
         
-        topRatedAlbums.append(review_data.get('albumName', 'Unknown Album'))
+        topRatedAlbums.append((review_data.get('albumName', 'Unknown Album'), review_data.get('artistName', 'Unknown Artist')))
 
     return topRatedAlbums
 
