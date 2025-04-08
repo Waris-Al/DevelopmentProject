@@ -8,39 +8,32 @@ import base64
 from datetime import datetime
 import time
 
-#Stuff to load database
-load_dotenv(dotenv_path='env/.env')
 
+load_dotenv(dotenv_path='env/.env') #Access env variables
+
+#Spotify API credentials
 spotifyClientID = os.getenv("spotifyClientID")
 spotifyClientSecret = os.getenv("spotifyClientSecret")
-
-
-
-
 spotifyAuthBP = Blueprint('spotifyAuth', __name__)
 
 
 #REDIRECT_URI = "http://127.0.0.1:5000/callback"
 REDIRECT_URI = "https://developmentproject.onrender.com/callback"
-
-
-
 SCOPE = "user-top-read user-read-playback-state user-read-currently-playing user-read-recently-played"
-
-
 
 sp_oauth = SpotifyOAuth(client_id=spotifyClientID,
                         client_secret=spotifyClientSecret,
                         redirect_uri=REDIRECT_URI,
                         scope=SCOPE)
 
-
+#Sends user to spotify login to authorise connection with app
 @spotifyAuthBP.route("/spotify_login")
 def spotify_login():
     """Redirect user to Spotify OAuth login"""
     auth_url = sp_oauth.get_authorize_url()
     return redirect(auth_url)
 
+#Callback function handles whatever response spotify login gives
 @spotifyAuthBP.route("/callback")
 def callback():
     """Handle Spotify OAuth callback and retrieve access token"""
@@ -66,8 +59,12 @@ def callback():
         return f"Error: {str(e)}"
 
 
-
-@spotifyAuthBP.route('/test2')
+'''
+Autologging functionality
+This works by getting the 50 most recent tracks and checking the context. If the context was an album, we can assume that the user has listened to the album and we automatically
+create a review for it, which they can then edit to include their thoughts if wanted.
+'''
+@spotifyAuthBP.route('/test2') #rename this soon
 def test2():
     latestReview = mostRecentReview(session['email'])
     mostRecentListen = latestReview['album_name']
@@ -101,6 +98,7 @@ def test2():
     except requests.exceptions.JSONDecodeError:
         return jsonify({"error": "Invalid JSON response from Spotify"}), 500
 
+    #This is where we get the different values of the track listened to
     recent_tracks = []
     for item in data.get("items", []):
         track = item["track"]
@@ -112,7 +110,9 @@ def test2():
         played_at_dt = datetime.strptime(played_at, "%Y-%m-%dT%H:%M:%S.%fZ")
         played_at_str = played_at_dt.strftime("%Y-%m-%d %H:%M:%S")
 
-        if context_type != "playlist" and not any(track['albumName'] == album_name for track in recent_tracks):
+        
+        #Creating the review
+        if context_type == "album" and not any(track['albumName'] == album_name for track in recent_tracks):
             if album_name == mostRecentListen:
                 break
             recent_tracks.append({
@@ -124,6 +124,7 @@ def test2():
                 "averageRating": "" 
             })
 
+    #Adding the review
     if recent_tracks:
         autoLogged = recent_tracks[0]
         session['review_json'] = autoLogged
@@ -133,9 +134,7 @@ def test2():
         return "No recently played albums"
 
 
-
-
-
+#This function is where we can search Spotify for information, avoiding us having to have all the different albums/artists in our database.
 @spotifyAuthBP.route('/searchSpotify', methods=['POST'])
 def searchSpotify():
     data = request.get_json()
@@ -180,6 +179,8 @@ def searchSpotify():
     if search_response.status_code != 200:
         return jsonify({"error": "Error fetching data from Spotify", "message": search_response.json()}), 500
 
+
+    #We get the info of the query type by going through the JSON response from the API 
     search_info = search_response.json()
     if search_type == 'album' and search_info.get('albums', {}).get('items'):
         album = search_info['albums']['items'][0]
@@ -206,6 +207,7 @@ def searchSpotify():
         return jsonify({"error": f"No {search_type} found for the query"}), 404
 
 
+#This function is for changing the favourites set on the Homepage
 @spotifyAuthBP.route('/changeFavourites', methods=['POST'])
 def changeFavourites():
     data = request.get_json()
@@ -226,12 +228,11 @@ def changeFavourites():
     else:
         return jsonify({"status": "failure"})
     
-    
+#This is where we set favourites during the registration process    
 @spotifyAuthBP.route('/setFavourites', methods=['GET', 'POST'])
 def setFavourites():
     if request.method == 'POST':
         session['favourites'] = request.json
-        print(session['favourites'])
     
     return render_template("setFavourites.html", spotifyClientID=spotifyClientID, spotifyClientSecret=spotifyClientSecret)
 

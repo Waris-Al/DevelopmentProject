@@ -5,12 +5,10 @@ from flask_socketio import SocketIO, send, emit
 from datetime import datetime
 from routes.socketSetUp import socketio 
 
-
-#Stuff to load database
-load_dotenv(dotenv_path='env/.env')
+load_dotenv(dotenv_path='env/.env') #Access env variables
 messagingRoutes = Blueprint('messagingRoutes', __name__)
 
-
+'''The functions in this file are all related to the messaging service.'''
 
 @messagingRoutes.route('/DM')
 def DM():
@@ -22,6 +20,7 @@ AUTHORIZED_USERS = {'user1': 'password1', 'user2': 'password2'}
 connected_users = {}
 
 
+#Function to receive messages
 @socketio.on('message')
 def handle_message(msg):
     sender = session['username']
@@ -36,7 +35,8 @@ def handle_message(msg):
     print(f"Message from {sender}: {msg} at {timestamp}")
     send(message_data, broadcast=True)
 
-    
+
+#Connects users to socket    
 @socketio.on('connect')
 def handle_connect():
     username = request.args.get('username')
@@ -50,6 +50,7 @@ def handle_connect():
         print(f'Unauthorized access attempt from {username}')
         handle_disconnect() 
 
+#Disconnect user from chat when they leave
 @socketio.on('disconnect')
 def handle_disconnect():
     for username, sid in connected_users.items():
@@ -65,14 +66,14 @@ def handle_broadcast_event(msg):
 def handle_custom_event(data):
     emit('response', {'data': 'Custom event received!'}, broadcast=True)
 
+#Loads previous messages in a chat
 @messagingRoutes.route("/retrieveMessages")
 def loadMessage():
     conversation_id = 8 #change to session var
     messages = loadMessages(conversation_id)
     return messages
 
-
-
+#Saves message to chat history
 @messagingRoutes.route("/recordMessage", methods=["POST"])
 def addMessages():
     data = request.json 
