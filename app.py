@@ -165,10 +165,13 @@ def save_review():
         if request.method == "POST":
             data = request.json
             review = data.get("reviewData")
+            addReview(userID, review)
         else:
             review = session['review_json']
             
-        addReview(userID, review) 
+            for autoReview in review:
+                addReview(userID, autoReview)
+            
         
         if session['autologgedReviews']:
             session.pop('autologgedReviews', None)

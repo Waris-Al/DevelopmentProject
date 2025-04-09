@@ -52,7 +52,7 @@ def callback():
             return "Error: Failed to retrieve access token from Spotify. Try logging in again."
 
         session["token_info"] = token_info
-        return redirect(url_for("test"))
+        return redirect(url_for("Homepage"))
 
     except Exception as e:
         print("Spotify Token Error:", str(e))
@@ -64,8 +64,8 @@ Autologging functionality
 This works by getting the 50 most recent tracks and checking the context. If the context was an album, we can assume that the user has listened to the album and we automatically
 create a review for it, which they can then edit to include their thoughts if wanted.
 '''
-@spotifyAuthBP.route('/test2') #rename this soon
-def test2():
+@spotifyAuthBP.route('/autoLogListenedAlbums')
+def autoLogListenedAlbums():
     latestReview = mostRecentReview(session['email'])
     mostRecentListen = latestReview['album_name']
     
@@ -126,8 +126,7 @@ def test2():
 
     #Adding the review
     if recent_tracks:
-        autoLogged = recent_tracks[0]
-        session['review_json'] = autoLogged
+        session['review_json'] = recent_tracks
         session['autologgedReviews'] = True
         return redirect(url_for('save_review'))
     else:
