@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<link href="../static/css/homepage.css" rel="stylesheet" type="text/css" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% include "NavBar.html" %}
+<html>
+<body>
+    <script>
+        const userFavourites = {{ favourites | tojson }}; 
+        const clientId = "{{ spotifyClientID }}";
+        const clientSecret = "{{ spotifyClientSecret }}";
+    </script>
+    <script src="../static/JS/homepage.js" defer></script>
+    <div class="Homepage">
+        <h1>{{ username }}'s Favourites</h1>
+        <iframe id="newReview" src="newReview" class="newReview" style="display:none"></iframe>
+        <iframe id="editReview" src="editReview" class="editReview" style="display:none"></iframe>
+        <div class="topThree">
+            <div id="FavouriteAlbum" class="FavouriteAlbum"> 
+                <p id="FavouriteAlbumName"></p>
+                <img id="FavouriteAlbumImage" src="" alt="FavouriteAlbum" class="FavouriteAlbum">
+            </div>
+
+            <div id="FavouriteArtist" class="FavouriteArtist">
+                <p id="FavouriteArtistName"></p>
+                <img id="FavouriteArtistImage" src="" alt="FavouriteArtist" class="FavouriteArtist">
+            </div>
+
+            <div id="FavouriteTrack" class="FavouriteTrack">
+                <p id="FavouriteTrackName"></p>
+                <img id="FavouriteTrackImage" src="" alt="FavouriteTrack" class="FavouriteTrack">
+            </div>
+        </div>
+
+        <br><br><br> <!--Replace with actual CSS-->
+
+        <h1>Recent Reviews</h1>
+        <table class="RecentReviews">
+            <tbody>
+                {% for review in reviews %}
+                <tr>
+                    <td><img src="{{ review.artist_name | replace(' ', '_') }}.jpg" alt="Artist PFP"></td>
+                    <td>{{ review.album_name }}</td>
+                    <td>{{ review.artist_name }}</td>
+                    <td>{{ review.date_listened }}</td>
+                    <td>{{ review.review }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>

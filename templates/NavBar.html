@@ -47,7 +47,19 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ query })
     });
+  
+    const userProfile = await response.json();
+  
+    if (userProfile.redirect_url) 
+    {
+      window.location.href = userProfile.redirect_url;
+    } 
+    else if (userProfile.error) 
+    {
+      document.getElementById("result").innerText = userProfile.error;
+    }
   }
+  
 
   async function searchAlbum(query) {
     const response = await fetch('/searchReviews', {

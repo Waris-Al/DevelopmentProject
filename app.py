@@ -206,10 +206,32 @@ def searchUserOrMedia():
     users = findUser(query)
     
     if users:
-        return users
+        return jsonify({"redirect_url": url_for('userProfile', username=users['username'])})
     else:
-        return "No users found" # make sure to pass this back so it displays on html
+        return jsonify({"error": "No users found"}) # make sure to pass this back so it displays on html
 
+
+@app.route('/userProfile/<username>', methods=['GET', 'POST'])
+def userProfile(username):
+    user = findUser(username)
+    
+    #we also need to put this in the db file, perhaps we could merge this function with homepage?
+    if user:
+        reviews = usersreviews.query.filter_by(user_email=user['email']).all()
+        
+        formatted_reviews = []
+        for userReview in reviews:
+            review_data = userReview.review
+            formatted_reviews.append({
+                'album_name': review_data.get('albumName', 'Unknown Album'),
+                'artist_name': review_data.get('artistName', 'Unknown Artist'),
+                'date_listened': review_data.get('dateListened', 'Unknown Date'),
+                'review': review_data.get('notes', 'No review available')
+            })
+            
+        return render_template("userProfile.html", username=username, reviews=formatted_reviews, favourites=user['favourites'])
+    else:
+        return "User not found", 404
 
 if __name__ == "__main__":
     socketio.run(app, debug=True)
