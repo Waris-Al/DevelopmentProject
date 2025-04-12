@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, request, redirect, session, jsonify, json
-from database import registerUser, init_db, logUserIn, addReview, usersreviews, loadFavourites, searchFor, findUser, editReview, deleteReview
+from database import registerUser, init_db, logUserIn, addReview, usersreviews, loadFavourites, searchFor, findUser, editReview, deleteReview, getUserReviews
 from dotenv import load_dotenv
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
@@ -86,20 +86,7 @@ def editUserReview():
 @app.route('/Homepage')
 def Homepage():
     if session.get('email'):
-        #move this into the DB file
-        reviews = usersreviews.query.filter_by(user_email=session['email']).all()
-
-        formatted_reviews = []
-        for userReview in reviews:
-            review_data = userReview.review
-            formatted_reviews.append({
-                'review_id': userReview.reviewid,
-                'album_name': review_data.get('albumName', 'Unknown Album'),
-                'artist_name': review_data.get('artistName', 'Unknown Artist'),
-                'date_listened': review_data.get('dateListened', 'Unknown Date'),
-                'review': review_data.get('notes', 'No review available')
-            })
-            
+        formatted_reviews = getUserReviews(session['email'])
         favourites = loadFavourites(session['email'])
             
         return render_template("homepage.html", reviews=formatted_reviews, spotifyClientID=spotifyClientID, spotifyClientSecret=spotifyClientSecret, favourites=favourites)
@@ -220,18 +207,7 @@ def userProfile(username):
     
     #we also need to put this in the db file, perhaps we could merge this function with homepage?
     if user:
-        reviews = usersreviews.query.filter_by(user_email=user['email']).all()
-        
-        formatted_reviews = []
-        for userReview in reviews:
-            review_data = userReview.review
-            formatted_reviews.append({
-                'album_name': review_data.get('albumName', 'Unknown Album'),
-                'artist_name': review_data.get('artistName', 'Unknown Artist'),
-                'date_listened': review_data.get('dateListened', 'Unknown Date'),
-                'review': review_data.get('notes', 'No review available')
-            })
-            
+        formatted_reviews = getUserReviews(user['email'])
         return render_template("userProfile.html", username=username, reviews=formatted_reviews, favourites=user['favourites'])
     else:
         return "User not found", 404

@@ -196,7 +196,21 @@ def findUser(username):
         return user_info
     else:
         return False
-    
+
+def getUserReviews(email): 
+    reviews = usersreviews.query.filter_by(user_email=email).all()
+        
+    formatted_reviews = []
+    for userReview in reviews:
+        review_data = userReview.review
+        formatted_reviews.append({
+            'album_name': review_data.get('albumName', 'Unknown Album'),
+            'artist_name': review_data.get('artistName', 'Unknown Artist'),
+            'date_listened': review_data.get('dateListened', 'Unknown Date'),
+            'review': review_data.get('notes', 'No review available')
+        })
+    return formatted_reviews
+
 def editReview(dateListened, reviewNotes, reviewID):
     review = usersreviews.query.filter_by(reviewid=reviewID).first()
     print(reviewID)
