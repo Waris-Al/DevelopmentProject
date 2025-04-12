@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, jsonify, session
 from database import highestRatedAlbums, allListenedAlbums
 from dotenv import load_dotenv
 import os
@@ -25,21 +25,19 @@ This algorithm works by taking any album the user has rated 4 or more stars, and
 It will then search for similar albums in those genres, ideally ones with cross over and return the recommendations.
 To avoid the same recommendations constantly, the algorithm uses randomness with what albums come back.
 '''
-@recommendationAlgorithm.route('/testingRn')
-def testingRn():
+@recommendationAlgorithm.route('/recommendAlbums')
+def recommendAlbums():
     
     #WARIS: WE'RE MAKING MULTIPLE API CALLS, DO NOT KEEP IT LIKE THIS, EITHER RUN THEM CONCURRENTLY OR FIND ANOTHER WAY
     
-    usersListeningHistory = allListenedAlbums('mavsfan4l@test.com') 
+    usersListeningHistory = allListenedAlbums(session['email']) #this is a list of all the albums the user has listened to, we need this to avoid duplicates in recommendations
     listOfGenres = {}
     #Getting the users highly rated albums, and a list of all the albums they've listened to to avoid duplicates in recommendation
-    usersTopRatedAlbums = highestRatedAlbums('mavsfan4l@test.com') #we may need to add randomness to this too
+    usersTopRatedAlbums = highestRatedAlbums(session['email']) #we may need to add randomness to this too
     
     for album in usersTopRatedAlbums:
         albumToSearch = album[0] 
         artistName = album[1]
-        #print(album[0])
-        #print(album[1])
 
         #make everything lowercase whilst comparing to avoid discrepancies between lastfm and spotify
         #next steps:
@@ -55,20 +53,24 @@ def testingRn():
         relevantGenres = requests.get(getAlbumGenres)
         
         tagName = "" #tags are genres
-        for tag in relevantGenres.json()['album']['tags']['tag']:
-            tagName = tag['name']
-            
-            if tagName in listOfGenres:
-                listOfGenres[tagName] += 1
-            else:  
-                listOfGenres[tagName] = 1
+        
+        if relevantGenres.json()["album"]["tags"] == "":
+            print("No tags found for this album, moving on")
+        else:
+            for tag in relevantGenres.json()["album"]["tags"]["tag"]:
+                tagName = tag['name']
+
+                if tagName in listOfGenres:
+                    listOfGenres[tagName] += 1
+                else:  
+                    listOfGenres[tagName] = 1
                 
         
     sortedGenreList = sorted(listOfGenres.items(), key=lambda item: item[1], reverse=True)
     print("List of Genres: ", sortedGenreList)
     
 
-
+    valid_recommendations = []
     for i in range(4):
         tagToSearchWith = sortedGenreList[i][0]
         #print("Tag to search with: ", tagToSearchWith)
@@ -85,7 +87,14 @@ def testingRn():
 
         # Check if it hasn't been listened to and the rank matches
         if album['name'] not in usersListeningHistory and album['@attr']['rank'] == str(albumToRandomlyRecommend + 1):
-            print(album['name'] + " by " + album['artist']['name'])
-    
-  
-    return foundRecs.json()
+            valid_recommendations.append({
+                'name': album['name'],
+                'artist': album['artist']['name']
+            })
+
+
+    return jsonify({
+        'albums': {
+            'album': valid_recommendations
+        }
+    })
