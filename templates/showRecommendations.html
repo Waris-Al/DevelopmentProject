@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Album Recommendations</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .album-list {
+            display: flex;
+            margin-top: 20px;
+            width: 100%;
+            justify-content: space-evenly;
+        }
+        
+        .album-item {
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        .album-item img {
+            width: 100px;
+            height: 100px;
+            margin-right: 20px;
+        }
+        .album-item .album-info {
+            display: flex;
+            flex-direction: column;
+        }
+        .album-item .album-info h3 {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Album Recommendations</h1>
+
+    <div class="album-list" id="albumList"></div>
+
+    <script>
+        window.onload = function() {
+            fetchRecommendations(); 
+        };
+
+        function fetchRecommendations() {
+            fetch('/recommendAlbums') 
+                .then(response => response.json())
+                .then(data => {
+                    displayRecommendations(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching recommendations:', error);
+                });
+        }
+
+        function displayRecommendations(data) {
+            const albumList = document.getElementById('albumList');
+            albumList.innerHTML = ''; 
+
+            if (data && data.albums && data.albums.album) 
+            {
+                data.albums.album.forEach(album => {
+                    const albumItem = document.createElement('div');
+                    albumItem.classList.add('album-item');
+
+                    const albumImage = document.createElement('img');
+                    const image = album.thumbnail; 
+                    albumImage.src = image || ''; 
+                    albumItem.appendChild(albumImage);
+
+                    const albumInfo = document.createElement('div');
+                    albumInfo.classList.add('album-info');
+                    const albumTitle = document.createElement('h3');
+                    albumTitle.textContent = album.name;
+                    albumInfo.appendChild(albumTitle);
+
+                    const albumArtist = document.createElement('p');
+                    albumArtist.textContent = `Artist: ${album.artist}`;
+                    albumInfo.appendChild(albumArtist);
+
+
+
+                    albumItem.appendChild(albumInfo);
+                    albumList.appendChild(albumItem);
+                });
+            } 
+            else 
+            {
+                albumList.innerHTML = '<p>No recommendations available. Start writing reviews!</p>';
+            }
+        }
+    </script>
+
+</body>
+</html>

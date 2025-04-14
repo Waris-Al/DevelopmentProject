@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, session
+from flask import Blueprint, jsonify, session, render_template
 from database import highestRatedAlbums, allListenedAlbums
 from dotenv import load_dotenv
 import os
@@ -89,7 +89,8 @@ def recommendAlbums():
         if album['name'] not in usersListeningHistory and album['@attr']['rank'] == str(albumToRandomlyRecommend + 1):
             valid_recommendations.append({
                 'name': album['name'],
-                'artist': album['artist']['name']
+                'artist': album['artist']['name'],
+                'thumbnail': album['image'][2]['#text']
             })
 
 
@@ -98,3 +99,7 @@ def recommendAlbums():
             'album': valid_recommendations
         }
     })
+
+@recommendationAlgorithm.route('/showRecommendations', methods=['GET'])
+def showRecommendations():
+    return render_template("showRecommendations.html")

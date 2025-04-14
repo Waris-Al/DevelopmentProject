@@ -1,3 +1,6 @@
+.Homepage {
+    padding-bottom: 33px;
+}
 
 img {
     width: 175px;
@@ -72,6 +75,11 @@ button.search{
     margin-left: 0; 
 }
 
+iframe#showRecommendations {
+    width: 99%;
+    height: 285px;
+    border-top: none;
+}
 
 .borderEditButton
 {
