@@ -52,7 +52,7 @@ def callback():
             return "Error: Failed to retrieve access token from Spotify. Try logging in again."
 
         session["token_info"] = token_info
-        return redirect(url_for("Homepage"))
+        return redirect(url_for("spotifyAuth.autoLogListenedAlbums"))
 
     except Exception as e:
         print("Spotify Token Error:", str(e))
@@ -121,7 +121,7 @@ def autoLogListenedAlbums():
                 "artistName": artist_name,
                 "firstListen": "",  
                 "dateListened": played_at_str,
-                "averageRating": "" 
+                "averageRating": "4" 
             })
 
     #Adding the review
@@ -130,7 +130,7 @@ def autoLogListenedAlbums():
         session['autologgedReviews'] = True
         return redirect(url_for('save_review'))
     else:
-        return "No recently played albums"
+        return redirect(url_for('Homepage'))
 
 
 #This function is where we can search Spotify for information, avoiding us having to have all the different albums/artists in our database.

@@ -31,6 +31,9 @@ def recommendAlbums():
     #WARIS: WE'RE MAKING MULTIPLE API CALLS, DO NOT KEEP IT LIKE THIS, EITHER RUN THEM CONCURRENTLY OR FIND ANOTHER WAY
     
     usersListeningHistory = allListenedAlbums(session['email']) #this is a list of all the albums the user has listened to, we need this to avoid duplicates in recommendations
+    if usersListeningHistory == []:
+        return "No listening history"
+    
     listOfGenres = {}
     #Getting the users highly rated albums, and a list of all the albums they've listened to to avoid duplicates in recommendation
     usersTopRatedAlbums = highestRatedAlbums(session['email']) #we may need to add randomness to this too

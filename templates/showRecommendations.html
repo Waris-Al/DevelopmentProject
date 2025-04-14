@@ -57,8 +57,8 @@
 
         function displayRecommendations(data) {
             const albumList = document.getElementById('albumList');
-            albumList.innerHTML = ''; 
-
+            albumList.innerHTML = '';
+            
             if (data && data.albums && data.albums.album) 
             {
                 data.albums.album.forEach(album => {
@@ -86,7 +86,7 @@
                     albumList.appendChild(albumItem);
                 });
             } 
-            else 
+            else
             {
                 albumList.innerHTML = '<p>No recommendations available. Start writing reviews!</p>';
             }
