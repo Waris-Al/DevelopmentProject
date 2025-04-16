@@ -284,4 +284,9 @@ def findFollowers(email):
 
     
     return follower_emails
-    
+
+def followUser(followerEmail, followeeEmail):
+    newFollower = followers(follower_email=followerEmail, followee_email=followeeEmail)
+    db.session.add(newFollower)
+    db.session.commit()
+    return True

@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, request, redirect, session, jsonify
-from database import registerUser, init_db, logUserIn, addReview, loadFavourites, searchFor, findUser, editReview, deleteReview, getUserReviews, mutualFollow, findFollowers
+from database import registerUser, init_db, logUserIn, addReview, loadFavourites, searchFor, findUser, editReview, deleteReview, getUserReviews, mutualFollow, findFollowers, followUser
 from dotenv import load_dotenv
 import os
 from routes.spotifyAuth import spotifyAuthBP
@@ -201,18 +201,46 @@ def userProfile(username):
     
     #we also need to put this in the db file, perhaps we could merge this function with homepage?
     if user:
+        showFollowButton = False
+        showChatButton = False
+        
+        followerEmail = session['email']
+        followeeEmail = user['email']
+        checkFollowers = findFollowers(followeeEmail)
+        
+        if followerEmail in checkFollowers:
+            areMutuals = mutualFollow(followerEmail, followeeEmail)
+            if areMutuals != "Not moots":
+                showChatButton = True
+        else:
+            showFollowButton = True
+        
         formatted_reviews = getUserReviews(user['email'])
-        return render_template("userProfile.html", username=username, reviews=formatted_reviews, favourites=user['favourites'])
+        return render_template("userProfile.html", username=username, profilesEmail=user['email'], reviews=formatted_reviews, favourites=user['favourites'], showFollowButton=showFollowButton, showChatButton=showChatButton)
     else:
         return "User not found", 404
 
-if __name__ == "__main__":
-    socketio.run(app, debug=True)
 
-
+@app.route('/followUser', methods=['POST'])
+def follow():
+    data = request.json
+    followerEmail = session['email']
+    followeeEmail = data.get("followeeEmail")
+    
+    userFollowed = followUser(followerEmail, followeeEmail)
+    
+    if userFollowed:
+        return jsonify({"message": "Followed successfully!"}), 200
+    else:
+        return jsonify({"error": "Failed to follow user."}), 400
+    
+#we will also need an unfollow function
+    
+    
+#arguably we dont even need these endpoints and can just use the functions, but keep for now just in case
 @app.route('/getMutuals')
 def getMutuals():
-    areMutuals = mutualFollow('shouldsave@dsfdsfdsfdsf.com', 'mavsfan4l@test.com') #these need to come from the post request
+    areMutuals = mutualFollow('shouldsave@bugfix.com', 'wanilaj@mailinator.com') #these need to come from the post request
     
     return areMutuals
 
@@ -221,3 +249,8 @@ def getAllFollowers():
     allFollowers = findFollowers('wanilaj@mailinator.com') #should be passed in
     
     return allFollowers
+
+if __name__ == "__main__":
+    socketio.run(app, debug=True)
+
+

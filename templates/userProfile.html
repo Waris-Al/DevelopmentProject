@@ -8,10 +8,43 @@
         const userFavourites = {{ favourites | tojson }}; 
         const clientId = "{{ spotifyClientID }}";
         const clientSecret = "{{ spotifyClientSecret }}";
+
+
+        async function followUser() {
+            try {
+                const response = await fetch('/followUser', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ followeeEmail: "{{ profilesEmail }}" })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    alert(data.message || 'Followed successfully!');
+                } else {
+                    alert('Failed to follow');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while trying to follow');
+            }
+        }
+
+        document.getElementById('follow-button')?.addEventListener('click', followUser);
     </script>
     <script src="../static/JS/homepage.js" defer></script>
     <div class="Homepage">
         <h1>{{ username }}'s Favourites</h1>
+
+        {% if showChatButton %}
+            <button id="chat-button">Chat</button>
+        {% elif showFollowButton %}
+            <button id="follow-button" onclick='followUser()'>Follow</button>
+        {% endif %}
+    
+
         <iframe id="newReview" src="newReview" class="newReview" style="display:none"></iframe>
         <iframe id="editReview" src="editReview" class="editReview" style="display:none"></iframe>
         <div class="topThree">
