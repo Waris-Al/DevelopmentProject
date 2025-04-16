@@ -1,13 +1,7 @@
-from flask import Flask, render_template, url_for, request, redirect, session, jsonify, json
-from database import registerUser, init_db, logUserIn, addReview, usersreviews, loadFavourites, searchFor, findUser, editReview, deleteReview, getUserReviews
+from flask import Flask, render_template, url_for, request, redirect, session, jsonify
+from database import registerUser, init_db, logUserIn, addReview, loadFavourites, searchFor, findUser, editReview, deleteReview, getUserReviews, mutualFollow, findFollowers
 from dotenv import load_dotenv
-import spotipy
-from spotipy.oauth2 import SpotifyOAuth
 import os
-from flask_socketio import SocketIO, send, emit
-from datetime import datetime
-import requests
-import base64
 from routes.spotifyAuth import spotifyAuthBP
 from routes.messaging import messagingRoutes
 from routes.socketSetUp import socketio
@@ -216,3 +210,14 @@ if __name__ == "__main__":
     socketio.run(app, debug=True)
 
 
+@app.route('/getMutuals')
+def getMutuals():
+    areMutuals = mutualFollow('shouldsave@dsfdsfdsfdsf.com', 'mavsfan4l@test.com') #these need to come from the post request
+    
+    return areMutuals
+
+@app.route('/getAllFollowers')
+def getAllFollowers():
+    allFollowers = findFollowers('wanilaj@mailinator.com') #should be passed in
+    
+    return allFollowers

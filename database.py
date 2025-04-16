@@ -52,6 +52,17 @@ class conversations(db.Model):
     def __repr__(self):
         return f'<Conversations(senderID={self.senderID}, receiverID={self.receiverID})>'
 
+class followers(db.Model):
+    __tablename__ = 'followers'
+    
+    follower_email = db.Column(db.String(120), db.ForeignKey('my_discog_user.email'), primary_key=True)
+    followee_email = db.Column(db.String(120), db.ForeignKey('my_discog_user.email'), primary_key=True)
+    
+    follower = db.relationship('my_discog_user', foreign_keys=[follower_email])
+    followee = db.relationship('my_discog_user', foreign_keys=[followee_email])
+    
+    def __repr__(self):
+        return f"<Follower(follower='{self.follower_email}', followee='{self.followee_email}')>"
     
 
 def loadMessages(conversationID):
@@ -84,8 +95,6 @@ def addMessage(conversationID, sender, message):
         db.session.commit()
         
         return "Message added"
-
-
 
 
 
@@ -164,7 +173,6 @@ def searchFor(searchTerm):
         return [{"review_id": review.reviewid, "user_email": review.user_email, "review": review.review} for review in results]
     else:
         return {"message": "No reviews found for the album name."}
-
 
 
 def mostRecentReview(email):
@@ -257,3 +265,23 @@ def allListenedAlbums(email):
 
     return allListenedAlbums
         
+
+def mutualFollow(followerEmail, followeeEmail):
+    follower = followers.query.filter_by(follower_email=followerEmail, followee_email=followeeEmail).first()
+    followee = followers.query.filter_by(follower_email=followeeEmail, followee_email=followerEmail).first()
+    
+    if follower and followee:
+        return "Mutual follow found!"
+    else:
+        return "Not moots"
+    
+def findFollowers(email):
+    followers_list = followers.query.filter_by(followee_email=email).all()
+    
+    follower_emails = []
+    for follower in followers_list:
+        follower_emails.append(follower.follower_email)
+
+    
+    return follower_emails
+    
