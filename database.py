@@ -24,6 +24,7 @@ class my_discog_user(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), unique=False, nullable=False)
     favourites = db.Column(JSONB)
+    displayname = db.Column(db.String(80), unique=False, nullable=True)
 
     def __repr__(self):
         return f'<sas21 {self.username}>'
@@ -98,9 +99,9 @@ def addMessage(conversationID, sender, message):
 
 
 
-def registerUser(inputtedusername, theirEmail, theirpassword, favourites):
+def registerUser(inputtedusername, theirEmail, theirpassword, favourites, displayname):
     theirpassword = hasher.hash(theirpassword)
-    new_user = my_discog_user(username=inputtedusername, email=theirEmail, password=theirpassword, favourites=favourites)
+    new_user = my_discog_user(username=inputtedusername, email=theirEmail, password=theirpassword, favourites=favourites, displayname=displayname)
     db.session.add(new_user)
     db.session.commit()
     return f'User {new_user.username} created!'
