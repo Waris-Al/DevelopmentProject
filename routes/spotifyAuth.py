@@ -102,7 +102,7 @@ def autoLogListenedAlbums():
     recent_tracks = []
     for item in data.get("items", []):
         track = item["track"]
-        artist_name = ", ".join([artist["name"] for artist in track["artists"]]) 
+        artist_name = ", ".join(artist["name"] for artist in track["album"]["artists"]) #makes sure we get the artists responsible for the album, not for the song
         album_name = track["album"]["name"]
         context_type = item["context"]["type"] if item.get("context") else "Unknown"
         played_at = item["played_at"]
