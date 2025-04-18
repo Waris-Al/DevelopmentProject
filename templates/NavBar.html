@@ -64,11 +64,26 @@
   
 
   async function searchAlbum(query) {
-    const response = await fetch('/searchReviews', {
+    const response = await fetch('/searchSpotify', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query })
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+          query: query,
+          type: "album",
+          purpose: "display"
+      }) 
     });
+
+    const albumProfile = await response.json();
+
+    if (albumProfile) {
+      //there is no other way to do this why why why
+      window.location.href = `/albumProfile?data=${encodeURIComponent(JSON.stringify(albumProfile))}`;
+
+    }
+    //add an else statement wiuth the error in it 
   }
 
   function searchUserOrMedia() {

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<link href="../static/css/homepage.css" rel="stylesheet" type="text/css" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% include "NavBar.html" %}
+<html>
+<body>
+    
+<div>
+    <h1>{{ albumInfo.name }}</h1>
+    <p>Artist: {{ albumInfo.artistName }}</p>
+    <img src="{{ albumInfo.imageURL }}">
+    <p>Release Date: {{ albumInfo.releaseDate }}</p>
+    <p>Total Tracks: {{ albumInfo.totalTracks }}</p>
+</div>
+
+
+
+</body>
+</html>
+</html>

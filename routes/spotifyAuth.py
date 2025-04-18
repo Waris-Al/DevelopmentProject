@@ -139,6 +139,7 @@ def searchSpotify():
     data = request.get_json()
     query = data.get('query')
     search_type = data.get('type')
+    purpose = data.get('purpose')
 
     client_credentials = f"{spotifyClientID}:{spotifyClientSecret}"
     encoded_credentials = base64.b64encode(client_credentials.encode('utf-8')).decode('utf-8')
@@ -181,7 +182,18 @@ def searchSpotify():
 
     #We get the info of the query type by going through the JSON response from the API 
     search_info = search_response.json()
-    if search_type == 'album' and search_info.get('albums', {}).get('items'):
+    if purpose == "display":
+        album = search_info['albums']['items'][0]
+        albumInfo = {
+            "name": album['name'],
+            "artistName": ", ".join(artist['name'] for artist in album['artists']),
+            "imageURL": album['images'][0]['url'],
+            "releaseDate": album['release_date'],
+            "totalTracks": album['total_tracks']
+        }
+        return albumInfo
+
+    elif search_type == 'album' and search_info.get('albums', {}).get('items'):
         album = search_info['albums']['items'][0]
         return jsonify({
             'type': 'favouriteAlbum',
@@ -236,4 +248,9 @@ def setFavourites():
     return render_template("setFavourites.html", spotifyClientID=spotifyClientID, spotifyClientSecret=spotifyClientSecret)
 
 
-
+@spotifyAuthBP.route('/albumProfile', methods=['GET', 'POST'])
+def albumProfile():
+    album_data = request.args.get('data')
+    album_info = json.loads(album_data)
+    
+    return render_template('albumProfile.html', albumInfo=album_info)
