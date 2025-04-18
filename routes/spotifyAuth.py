@@ -1,5 +1,5 @@
 from flask import render_template, url_for, request, redirect, session, jsonify, json, Blueprint
-from database import editFavourite, mostRecentReview
+from database import editFavourite, mostRecentReview, loadReviews
 from dotenv import load_dotenv
 from spotipy.oauth2 import SpotifyOAuth
 import os
@@ -252,5 +252,6 @@ def setFavourites():
 def albumProfile():
     album_data = request.args.get('data')
     album_info = json.loads(album_data)
+    reviews = loadReviews(album_info['name'])
     
-    return render_template('albumProfile.html', albumInfo=album_info)
+    return render_template('albumProfile.html', albumInfo=album_info, reviews=reviews)

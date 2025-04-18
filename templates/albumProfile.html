@@ -14,6 +14,21 @@
 </div>
 
 
+<table class="">
+    <tbody>
+        {% for review in reviews %}
+        <tr>
+            <td>{{ review.reviewer_username }}</td>
+            <td>{{ review.date_listened }}</td>
+            <td>{{ review.review }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<!--
+we need to add a hidden one for email above, and then clicking on a username will take you to that persons page
+-->
+
 
 </body>
 </html>

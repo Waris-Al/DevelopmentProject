@@ -144,16 +144,18 @@ def Register():
 def save_review():
     try:
         userID = session['email']
+        username = session['username']
+
         
         if request.method == "POST":
             data = request.json
             review = data.get("reviewData")
-            addReview(userID, review)
+            addReview(userID, review, username)
         else:
             review = session['review_json']
             
             for autoReview in review:
-                addReview(userID, autoReview)
+                addReview(userID, autoReview, username)
             
         
         if session['autologgedReviews']:

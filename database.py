@@ -35,7 +35,7 @@ class usersreviews(db.Model):
     reviewid = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_email = db.Column(db.String, db.ForeignKey('my_discog_user.email', ondelete='CASCADE'), nullable=False)
     review = db.Column(MutableDict.as_mutable(JSONB), nullable=False)
-    
+    username = db.Column(db.String(80), nullable=False)  
     user = db.relationship('my_discog_user', backref='reviews')
 
     def __repr__(self):
@@ -119,11 +119,10 @@ def logUserIn(theirEmail, theirPassword):
     return False  
 
 
-def addReview(user_email, review_data):
+def addReview(user_email, review_data, username):
     user = my_discog_user.query.filter_by(email=user_email).first()
-    
     if user:
-        new_review = usersreviews(user_email=user_email, review=review_data)  # Removed reviewid, as it's auto-incrementing
+        new_review = usersreviews(user_email=user_email, review=review_data, username=username)  # Removed reviewid, as it's auto-incrementing
         db.session.add(new_review)
         db.session.commit()
         return f'Review added for user {user.email}'
@@ -291,3 +290,16 @@ def followUser(followerEmail, followeeEmail):
     db.session.add(newFollower)
     db.session.commit()
     return True
+
+def loadReviews(albumName):
+    reviews = usersreviews.query.filter(usersreviews.review['albumName'].astext == albumName).all()
+    formatted_reviews = []
+    for review in reviews:
+        review_data = review.review
+        formatted_reviews.append({
+            'reviewer_email': review.user_email,
+            'reviewer_username': review.username,
+            'date_listened': review_data.get('dateListened', 'Unknown Date'),
+            'review': review_data.get('notes', 'No review available')
+        })
+    return formatted_reviews
