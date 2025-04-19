@@ -15,10 +15,10 @@
       <img src="../static/Images/Logo.png" alt="Logo" class="Logo">
     </a>
     {% if 'email' not in session or not session['email'] %}
-      <a href="Login">Login</a>
-      <a href="Register">Register</a>
+      <a href="{{ url_for('Login') }}">Login</a>
+      <a href="{{ url_for('Register') }}">Register</a>
     {% else %}
-      <a href="DM">DM</a>
+      <a href="{{ url_for('DM') }}">DM</a>
       <div class="search-bar">
         <input type="text" id="searchQuery" placeholder="Enter name">
         <select id="searchType">
@@ -34,10 +34,10 @@
 
   <div class="right-items">
     {% if 'email' in session and session['email'] %}
-      <a href="autoLogListenedAlbums">Sync recent albums</a>
-      <a href="Homepage">Profile</a>
-      <a href="spotify_login">Link Account to Spotify</a>
-      <a href="logout">Log Out</a>
+      <a href="{{ url_for('autoLogListenedAlbums') }}">Sync recent albums</a>
+      <a href="{{ url_for('Homepage') }}">Profile</a>
+      <a href=" {{ url_for('spotify_login') }} ">Link Account to Spotify</a>
+      <a href=" {{ url_for('logout') }} ">Log Out</a>
     {% endif %}
   </div>
 </div>
