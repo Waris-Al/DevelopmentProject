@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, request, redirect, session, jsonify
-from database import registerUser, init_db, logUserIn, addReview, loadFavourites, searchFor, findUser, editReview, deleteReview, getUserReviews, mutualFollow, findFollowers, followUser
+from database import registerUser, init_db, logUserIn, addReview, loadFavourites, findUser, editReview, deleteReview, getUserReviews, mutualFollow, findFollowers, followUser
 from dotenv import load_dotenv
 import os
 from routes.spotifyAuth import spotifyAuthBP
@@ -41,23 +41,20 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/deleteReview', methods=['POST'])
+@app.route('/deleteReview', methods=['POST']) #EH
 def deleteUserReview():
         
-    if request.method == 'POST':
-        data = request.json
-        reviewID = data.get("review_id")
+    data = request.json
+    reviewID = data.get("review_id")
         
-        deletedReview = deleteReview(reviewID)
+    deletedReview = deleteReview(reviewID)
         
-        if deletedReview:
-            print("Review deleted successfully")
-            
+    if deletedReview:
+        return jsonify({"message": "Review deleted successfully"}), 200
     else:
-        return render_template("deleteReview.html")
-    return "hi"
+        return jsonify({"error": "Could not delete review."}), 400
 
-@app.route('/editReview', methods=['GET', 'POST'])
+@app.route('/editReview', methods=['GET', 'POST']) #EH
 def editUserReview():
         
     if request.method == 'POST':
@@ -71,23 +68,28 @@ def editUserReview():
         editedReview = editReview(dateListened, review, reviewID)
         
         if editedReview:
-            print("Review edited successfully")
+            return jsonify ({"message": "Review edited"}), 200
+        else:
+            return jsonify({"error": "Could not edit review."}), 400
 
     else:
         return render_template("editReview.html")
-    return "hi"
 
-@app.route('/Homepage')
+
+@app.route('/Homepage') #EH
 def Homepage():
     if session.get('email'):
         formatted_reviews = getUserReviews(session['email'])
         favourites = loadFavourites(session['email'])
-            
-        return render_template("homepage.html", reviews=formatted_reviews, spotifyClientID=spotifyClientID, spotifyClientSecret=spotifyClientSecret, favourites=favourites)
+        
+        if favourites is None: #you shouldnt be able to register if you didnt do this but we're setting this just in case
+            return render_template("setFavourites.html", spotifyClientID=spotifyClientID, spotifyClientSecret=spotifyClientSecret)
+        else:
+            return render_template("homepage.html", reviews=formatted_reviews, spotifyClientID=spotifyClientID, spotifyClientSecret=spotifyClientSecret, favourites=favourites)
     else:
         return render_template("index.html")
 
-@app.route('/Login', methods=['GET', 'POST'])
+@app.route('/Login', methods=['GET', 'POST']) #EH
 def Login():
     if request.method == "POST":
         email = request.form['email'].lower()
@@ -109,13 +111,13 @@ def Login():
     error = session.pop('error', None)
     return render_template('login.html', error=error)
 
-@app.route('/logout')
+@app.route('/logout') #EH
 def logout():
     session.clear()
     return redirect(url_for('index')) 
 
 
-@app.route('/Register', methods=['GET', 'POST'])
+@app.route('/Register', methods=['GET', 'POST']) #need to change how the database function returns in order to have proper EH
 def Register():
 
     if request.method == 'POST' and session.get('favourites') is not None:
@@ -140,7 +142,7 @@ def Register():
     return render_template('register.html', error=session.get('error'))
 
 
-@app.route('/save_review', methods=['GET', 'POST'])
+@app.route('/save_review', methods=['GET', 'POST']) #the DB function returns false but coz we're in a try catch i reckon we should be fine
 def save_review():
     try:
         userID = session['email']
@@ -166,7 +168,7 @@ def save_review():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
-@app.route('/newReview')
+@app.route('/newReview') #EH
 def newReview():
     return render_template("newReview.html", spotifyClientID=spotifyClientID, spotifyClientSecret=spotifyClientSecret)
 
@@ -177,17 +179,7 @@ def test():
 
 
 
-@app.route('/searchReviews', methods=['POST'])
-def searchReviews():
-    data = request.json
-    searchTerm = data.get("query") 
-    reviews = searchFor(searchTerm)
-    
-    return jsonify(reviews) #get this displayed in a dropdown on the page
-
-
-
-@app.route('/searchUser', methods=['POST'])
+@app.route('/searchUser', methods=['POST']) #EH
 def searchUserOrMedia():
     data = request.json
     query = data.get("query")
@@ -199,7 +191,7 @@ def searchUserOrMedia():
         return jsonify({"error": "No users found"}) # make sure to pass this back so it displays on html
 
 
-@app.route('/userProfile/<username>', methods=['GET', 'POST'])
+@app.route('/userProfile/<username>', methods=['GET', 'POST']) #EH
 def userProfile(username):
     user = findUser(username)
     
@@ -225,7 +217,7 @@ def userProfile(username):
         return "User not found", 404
 
 
-@app.route('/followUser', methods=['POST'])
+@app.route('/followUser', methods=['POST']) #EH
 def follow():
     data = request.json
     followerEmail = session['email']

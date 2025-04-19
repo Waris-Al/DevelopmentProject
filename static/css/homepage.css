@@ -78,7 +78,7 @@ button.search{
 iframe#showRecommendations {
     width: 99%;
     height: 285px;
-    border-top: none;
+    border: none;
 }
 
 .borderEditButton

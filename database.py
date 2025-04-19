@@ -127,7 +127,7 @@ def addReview(user_email, review_data, username):
         db.session.commit()
         return f'Review added for user {user.email}'
     
-    return 'User not found!'
+    return False
 
 
     #how to select JSON info
@@ -162,17 +162,7 @@ def loadFavourites(email):
         return user[0]
     else:
         return None
-    
 
-def searchFor(searchTerm):
-    results = usersreviews.query.filter(
-        usersreviews.review['albumName'].astext == searchTerm
-        ).all()
-
-    if results:
-        return [{"review_id": review.reviewid, "user_email": review.user_email, "review": review.review} for review in results]
-    else:
-        return {"message": "No reviews found for the album name."}
 
 
 def mostRecentReview(email):
