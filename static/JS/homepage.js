@@ -95,8 +95,14 @@ function capitalizeFirstLetter(word) {
     }
 
     function editReview(currentReview) {
-        document.getElementById("editReview").style.display = "block";
         localStorage.setItem('currentReview', JSON.stringify(currentReview));
+
+        //This lets us ensure that the iframe loads with the details already inside
+        const editReviewWindow = document.getElementById("editReview");
+        editReviewWindow.src = editReviewWindow.src;
+        editReviewWindow.onload = function () {
+            editReviewWindow.style.display = "block";
+        };
     }
     
 

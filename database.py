@@ -205,7 +205,8 @@ def getUserReviews(email):
             'album_name': review_data.get('albumName', 'Unknown Album'),
             'artist_name': review_data.get('artistName', 'Unknown Artist'),
             'date_listened': review_data.get('dateListened', 'Unknown Date'),
-            'review': review_data.get('notes', 'No review available')
+            'review': review_data.get('notes', 'No review available'),
+            'review_id': userReview.reviewid
         })
     return formatted_reviews
 
