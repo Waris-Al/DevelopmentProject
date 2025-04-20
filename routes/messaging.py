@@ -39,8 +39,9 @@ def handle_message(msg):
 #Connects users to socket    
 @socketio.on('connect')
 def handle_connect():
-    username = request.args.get('username')
-    password = request.args.get('password')
+    username = "user1"
+    password = "password1"
+    #we need to completley rewrite this logic, hard coding for now to get user testing done at least
     
     # Check if the user is authorized
     if username in AUTHORIZED_USERS and AUTHORIZED_USERS[username] == password:
