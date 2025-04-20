@@ -132,6 +132,7 @@ def Register():
         if success:
             session.pop('error', None)
             session['email'] = email
+            session['username'] = username
             return redirect(url_for('Homepage'))
         else:
             return render_template('register.html', error=session.get('error')) 
