@@ -294,3 +294,10 @@ def loadReviews(albumName):
             'review': review_data.get('notes', 'No review available')
         })
     return formatted_reviews
+
+
+def newConversation(sender, receiver):
+    new_conversation = conversations(senderid=sender, receiverid=receiver, messages=[])
+    db.session.add(new_conversation)
+    db.session.commit()
+    return True

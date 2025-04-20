@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, session, jsonify, Blueprint
-from database import loadMessages, addMessage
+from database import loadMessages, addMessage, newConversation
 from dotenv import load_dotenv
 from flask_socketio import SocketIO, send, emit
 from datetime import datetime
@@ -70,7 +70,7 @@ def handle_custom_event(data):
 #Loads previous messages in a chat
 @messagingRoutes.route("/retrieveMessages")
 def loadMessage():
-    conversation_id = 8 #change to session var
+    conversation_id = 9 #change to session var
     messages = loadMessages(conversation_id)
     return messages
 
@@ -83,8 +83,18 @@ def addMessages():
     if not message:
         return jsonify({"error": "No message provided"}),
 
-    response = addMessage(8, session['username'], message)  
+    response = addMessage(9, session['username'], message)  
     return jsonify({"status": "success", "message": message})  
 
 
-
+@messagingRoutes.route("/createConversation", methods=["GET"])
+def createConversation():
+    #again change these all to use the session variables
+    #conversersData = request.json
+    sender = "thatsnotme" #conversersData.get("sender")
+    receiver = "wazzamazza" #conversersData.get("receiver")
+    success = newConversation(sender, receiver)
+    if success:
+        return jsonify({"status": "success", "message": "Conversation created"})
+    else:
+        return jsonify({"status": "error", "message": "Failed to create conversation"}), 500
