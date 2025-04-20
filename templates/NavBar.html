@@ -18,7 +18,7 @@
       <a href="{{ url_for('Login') }}">Login</a>
       <a href="{{ url_for('Register') }}">Register</a>
     {% else %}
-      <a href="{{ url_for('DM') }}">DM</a>
+      <a href="{{ url_for('messagingRoutes.DM') }}">DM</a>
       <div class="search-bar">
         <input type="text" id="searchQuery" placeholder="Enter name">
         <select id="searchType">
@@ -34,9 +34,9 @@
 
   <div class="right-items">
     {% if 'email' in session and session['email'] %}
-      <a href="{{ url_for('autoLogListenedAlbums') }}">Sync recent albums</a>
+      <a href="{{ url_for('spotifyAuth.autoLogListenedAlbums') }}">Sync recent albums</a>
       <a href="{{ url_for('Homepage') }}">Profile</a>
-      <a href=" {{ url_for('spotify_login') }} ">Link Account to Spotify</a>
+      <a href=" {{ url_for('spotifyAuth.spotify_login') }} ">Link Account to Spotify</a>
       <a href=" {{ url_for('logout') }} ">Log Out</a>
     {% endif %}
   </div>
