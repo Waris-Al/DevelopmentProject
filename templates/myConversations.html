@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<link href="../static/css/homepage.css" rel="stylesheet" type="text/css" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% include "NavBar.html" %}
+<html>
+<body>
+    
+<script>
+    function goToDM(id)
+    {
+        localStorage.setItem("chatID", id);
+        window.location.href = '/DM';
+    }
+</script>
+
+<table class="">
+    <tbody>
+        {% for chat in conversations %}
+        <tr>
+            <td onclick="goToDM('{{ chat.id }}')">Talk with {{ chat.oneToShow }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+</body>
+</html>
+</html>
+
+

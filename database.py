@@ -51,7 +51,7 @@ class conversations(db.Model):
     receiver = db.relationship('my_discog_user', foreign_keys=[receiverid]) 
     
     def __repr__(self):
-        return f'<Conversations(senderID={self.senderID}, receiverID={self.receiverID})>'
+        return f'<Conversations(senderid={self.senderid}, receiverid={self.receiverid})>'
 
 class followers(db.Model):
     __tablename__ = 'followers'
@@ -301,3 +301,26 @@ def newConversation(sender, receiver):
     db.session.add(new_conversation)
     db.session.commit()
     return True
+
+
+def loadConversations(user):
+    usersConversations = conversations.query.filter(or_(conversations.receiverid == user, conversations.senderid == user)).all()
+    
+    chats = []
+    if usersConversations:
+        for chat in usersConversations:
+            oneToShow = ''
+            if user == chat.senderid:
+                oneToShow = chat.receiverid
+            else:
+                oneToShow = chat.senderid
+            chats.append({
+                'sender': chat.senderid,
+                'receiver': chat.receiverid,
+                'id': chat.id,
+                'oneToShow': oneToShow
+            })
+        return chats
+    
+    else:
+        return False

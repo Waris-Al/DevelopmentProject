@@ -8,13 +8,19 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
     <script>
 
-        function loadMessages(){
-            fetch('/retrieveMessages')
-            .then(response => response.json()) 
+        function loadMessages() {
+            fetch('/retrieveMessages', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: localStorage.getItem('chatID') }) 
+            })
+            .then(response => response.json())
             .then(previousMessages => {
                 let messageContainer = document.getElementById("previousMessages");
-                messageContainer.innerHTML = ""; 
-
+                messageContainer.innerHTML = "";
+        
                 previousMessages.forEach(msg => {
                     appendMessage(msg.sender, msg.message, msg.timestamp);
                 });
