@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 import os
 import requests
 import random
+import json
 
 
 load_dotenv(dotenv_path='env/.env') #Access env variables
@@ -54,13 +55,16 @@ def recommendAlbums():
         getAlbumGenres = f'https://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key={lastFMKey}&artist={artistName}&album={albumToSearch}&format=json' #change how this is done, too many API calls rn
 
         relevantGenres = requests.get(getAlbumGenres)
-        
         tagName = "" #tags are genres
         
-        if relevantGenres.json()["album"]["tags"] == "":
-            print("No tags found for this album, moving on")
+        albumData = relevantGenres.json()
+        
+        if "error" in albumData:
+            print("Album not found, moving on")
+        elif albumData['album']['tags'] == '':
+            print('No tags found for this album, moving on')
         else:
-            for tag in relevantGenres.json()["album"]["tags"]["tag"]:
+            for tag in relevantGenres.json()['album']['tags']['tag']:
                 tagName = tag['name']
 
                 if tagName in listOfGenres:
