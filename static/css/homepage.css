@@ -115,3 +115,15 @@ button.editButton {
         width: 100px;
     }
 }
+
+
+div#commentDiv {
+    width: 100%;
+    padding-left: 101%;
+    padding-bottom: 10%;
+}
+
+.commentButton{
+    position: relative;
+    margin-left: 5px;
+}

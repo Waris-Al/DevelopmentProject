@@ -118,4 +118,31 @@ function capitalizeFirstLetter(word) {
     }
     
     
-    
+    function leaveComment(reviewID)
+    {
+        document.getElementById(`commentFor-${reviewID}`).style.display = 'flex';
+    }
+    function addComment(reviewID)
+    {
+        
+        const comment = document.getElementById(`commentInput-${reviewID}`).value;
+
+        fetch('/addComment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+                reviewID: reviewID,
+                comment: comment
+            
+            })
+        })
+        .then(data => {
+            console.log('Success:', data);
+            document.getElementById(`commentFor-${reviewID}`).style.display = 'none';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }

@@ -27,6 +27,7 @@
             })
             .then(data => {
                 console.log('Success:', data);
+                document.getElementById(`commentFor-${reviewID}`).style.display = 'none';
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -57,7 +58,7 @@
             <td>
                 <div id="commentFor-{{ review.reviewID }}" style="display:none;">
                     <input type="text" id="commentInput-{{review.reviewID}}" placeholder="Write a comment...">
-                    <button onclick="addComment({{ review.reviewID }})">Submit</button>
+                    <button onclick="addComment({{ review.reviewID }})">Comment</button>
                 </div>
             </td>
         </tr>

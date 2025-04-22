@@ -76,6 +76,15 @@
                     <td>{{ review.artist_name }}</td>
                     <td>{{ review.date_listened }}</td>
                     <td>{{ review.review }}</td>
+                    <td>
+                        <div id="commentFor-{{ review.review_id }}" style="display:none;">
+                            <input type="text" id="commentInput-{{review.review_id}}" placeholder="Write a comment...">
+                            <button class="commentButton" onclick="addComment({{ review.review_id }})">Comment</button>
+                        </div>
+                    </td>
+                    <td>
+                        <button onclick="leaveComment({{ review.review_id }})">Reply</button>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
