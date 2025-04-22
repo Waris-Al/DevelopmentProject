@@ -302,7 +302,8 @@ def loadReviews(albumName):
             'reviewer_email': review.user_email,
             'reviewer_username': review.username,
             'date_listened': review_data.get('dateListened', 'Unknown Date'),
-            'review': review_data.get('notes', 'No review available')
+            'review': review_data.get('notes', 'No review available'),
+            'reviewID': review.reviewid
         })
     return formatted_reviews
 

@@ -248,9 +248,11 @@ def getAllFollowers():
     return allFollowers
 
 
-@app.route('/addComment')
+@app.route('/addComment', methods=['POST'])
 def addUserComment():
-    commentAdded = addComment(4, "okay bro", "tay") #we will be using variables posted to the function, this is just POC
+    reviewID = request.get_json().get('reviewID')
+    comment = request.get_json().get('comment')
+    commentAdded = addComment(reviewID, comment, session['username'])
     
     if commentAdded:
         return "Comment added"

@@ -1,10 +1,38 @@
 <!DOCTYPE html>
-<link href="../static/css/homepage.css" rel="stylesheet" type="text/css" />
+<link href="../static/css/albumProfile.css" rel="stylesheet" type="text/css" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 {% include "NavBar.html" %}
 <html>
 <body>
-    
+    <script>
+        function leaveComment(reviewID)
+        {
+            document.getElementById(`commentFor-${reviewID}`).style.display = 'block';
+        }
+        function addComment(reviewID)
+        {
+            
+            const comment = document.getElementById(`commentInput-${reviewID}`).value;
+
+            fetch('/addComment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    reviewID: reviewID,
+                    comment: comment
+                
+                })
+            })
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
 <div>
     <h1>{{ albumInfo.name }}</h1>
     <p>Artist: {{ albumInfo.artistName }}</p>
@@ -21,13 +49,22 @@
             <td>{{ review.reviewer_username }}</td>
             <td>{{ review.date_listened }}</td>
             <td>{{ review.review }}</td>
+            <td>
+                <button onclick="leaveComment({{ review.reviewID }})">Reply</button>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div id="commentFor-{{ review.reviewID }}" style="display:none;">
+                    <input type="text" id="commentInput-{{review.reviewID}}" placeholder="Write a comment...">
+                    <button onclick="addComment({{ review.reviewID }})">Submit</button>
+                </div>
+            </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
-<!--
-we need to add a hidden one for email above, and then clicking on a username will take you to that persons page
--->
+
 
 
 </body>
