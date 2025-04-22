@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, request, redirect, session, jsonify
-from database import registerUser, init_db, logUserIn, addReview, loadFavourites, findUser, editReview, deleteReview, getUserReviews, mutualFollow, findFollowers, followUser
+from database import registerUser, init_db, logUserIn, addReview, loadFavourites, findUser, editReview, deleteReview, getUserReviews, mutualFollow, findFollowers, followUser, addComment
 from dotenv import load_dotenv
 import os
 from routes.spotifyAuth import spotifyAuthBP
@@ -246,6 +246,17 @@ def getAllFollowers():
     allFollowers = findFollowers('wanilaj@mailinator.com') #should be passed in
     
     return allFollowers
+
+
+@app.route('/addComment')
+def addUserComment():
+    commentAdded = addComment(4, "okay bro", "tay") #we will be using variables posted to the function, this is just POC
+    
+    if commentAdded:
+        return "Comment added"
+    else:
+        return "Error when adding comment"
+
 
 if __name__ == "__main__":
     socketio.run(app, debug=True)

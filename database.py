@@ -65,6 +65,17 @@ class followers(db.Model):
     def __repr__(self):
         return f"<Follower(follower='{self.follower_email}', followee='{self.followee_email}')>"
     
+class comments(db.Model):
+    commentid = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    reviewid = db.Column(db.Integer, db.ForeignKey('usersreviews.reviewid', ondelete='CASCADE'), nullable=False)
+    commentcontent = db.Column(db.Text, nullable=False)
+    commentlikes = db.Column(db.Integer)
+    commenter = db.Column(db.String(80), db.ForeignKey('my_discog_user.username'), nullable=False)
+    
+    def __repr__(self):
+        return f'Comments: {self.commentcontent} by {self.commenter} with id {self.commentid}'
+
+
 
 def loadMessages(conversationID):
     try:
@@ -324,3 +335,10 @@ def loadConversations(user):
     
     else:
         return False
+
+
+def addComment(reviewID, comment, username):
+    toComment = comments(reviewid=reviewID, commentcontent=comment, commenter=username)
+    db.session.add(toComment)
+    db.session.commit()
+    return True
