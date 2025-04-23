@@ -6,6 +6,7 @@ from routes.spotifyAuth import spotifyAuthBP
 from routes.messaging import messagingRoutes
 from routes.socketSetUp import socketio
 from routes.recommendations import recommendationAlgorithm
+from routes.model import AIStarPrediction
 app = Flask(__name__)
 
 #Stuff to load database
@@ -33,6 +34,7 @@ socketio.init_app(app)
 app.register_blueprint(spotifyAuthBP)
 app.register_blueprint(messagingRoutes)
 app.register_blueprint(recommendationAlgorithm)
+app.register_blueprint(AIStarPrediction)
 
 
 

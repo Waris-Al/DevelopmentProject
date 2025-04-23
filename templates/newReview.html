@@ -2,15 +2,33 @@
     const clientId = "{{ spotifyClientID }}";
     const clientSecret = "{{ spotifyClientSecret }}";
 
+    async function getAIRating(reviewContent) {        
+        try {
+            const response = await fetch('/modelTesting', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ reviewContent })
+            });
+    
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error("Error:", error);
+            return "Couldn't determine rating"; 
+        }
+    }
+     
 
-    function saveReview() {
+    async function saveReview() {
         const reviewData = {
             albumName: document.getElementById("albumName").innerText,
             artistName: document.getElementById("artistName").innerText,
-            averageRating: "4", //change this to a selected value in the future, set for now to show autologging/recommendations working
             dateListened: document.getElementById("dateListened").value,
             firstListen: document.getElementById("firstListenButton").innerText,
-            notes: document.getElementById("notes").value
+            notes: document.getElementById("notes").value,
+            averageRating: await getAIRating(document.getElementById("notes").value)
         };
 
         fetch('/save_review', {
