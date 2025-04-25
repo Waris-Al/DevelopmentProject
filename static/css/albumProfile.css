@@ -13,26 +13,5 @@ div#commentDiv {
 }
 /* for mobile views */
 @media screen and (max-width: 768px) {
-    img {
-        width: 100px;
-        height: 100px;
-    }
-    
-    .topThree {
-        
-        display: flex;
-        justify-content: space-around;
-        text-align: center;
-        align-items: end;
-    }
 
-    button {
-        position: absolute;
-        display: flex;
-        margin-left: 31px;
-    }
-
-    p {
-        width: 100px;
-    }
 }

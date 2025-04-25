@@ -61,9 +61,22 @@ body
 }
 
 iframe#setFavourites {
-  left: -67%;
+  left: -77%;
   position: relative;
-  width: 701px;
+  width: 770px;
   height: 388px;
   border: none;
+}
+
+
+@media screen and (max-width: 768px) 
+{
+  iframe#setFavourites {
+    position: relative;
+    height: 643px;
+    border: none;
+    width: 100%;
+    left: 0;
+}
+
 }

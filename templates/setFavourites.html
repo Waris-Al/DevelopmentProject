@@ -1,3 +1,8 @@
+<!DOCTYPE html>
+<link href="../static/css/setFavourites.css" rel="stylesheet" type="text/css" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<html>
 <script>
     const clientId = "{{ spotifyClientID }}";
     const clientSecret = "{{ spotifyClientSecret }}";
@@ -114,45 +119,7 @@
 </script>
 
 
-<style>
-    .searchContainer {
-        display: flex;
-        justify-content: space-around;
-        align-items: flex-start;
-        gap: 20px;
-    }
-
-    .searchBox {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .searchBar {
-        margin-bottom: 10px;
-        padding: 5px;
-    }
-
-    img {
-        display: none;
-        width: 200px;
-        height: 200px;
-        object-fit: cover;
-        margin-bottom: 10px;
-    }
-
-    button {
-        padding: 5px 10px;
-        cursor: pointer;
-    }
-
-    button.confirm {
-        display: flex;
-        position: absolute;
-        margin-top: 350px;
-    }
-</style>
-
+<body>
 <div class="searchContainer">
     <div class="searchBox">
         <label for="favouriteArtist">Favourite Artist:</label>
@@ -177,4 +144,5 @@
 
     <button class="confirm" onclick="setFavourites()">Confirm</button>
 </div>
-
+</body>
+</html>

@@ -114,6 +114,11 @@ button.editButton {
     p {
         width: 100px;
     }
+
+    iframe#showRecommendations {
+        height: 882px;
+        border: none;
+    }
 }
 
 
@@ -127,3 +132,4 @@ div#commentDiv {
     position: relative;
     margin-left: 5px;
 }
+
