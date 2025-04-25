@@ -79,4 +79,7 @@ iframe#setFavourites {
     left: 0;
 }
 
+.registerDetails {
+  margin: 0px 0 0 -150px;
+}
 }
