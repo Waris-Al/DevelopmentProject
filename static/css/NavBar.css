@@ -46,7 +46,7 @@ body
   height:40px;
 }
 
-button {
+button.searchButton {
   position: relative;
   display: inline;
   margin-left: 0;

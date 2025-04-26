@@ -91,11 +91,13 @@ function capitalizeFirstLetter(word) {
     
 
     function addReview() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         document.getElementById("newReview").style.display = "block";
     }
 
     function editReview(currentReview) {
         localStorage.setItem('currentReview', JSON.stringify(currentReview));
+        window.scrollTo({ top: 0, behavior: 'smooth' });
 
         //This lets us ensure that the iframe loads with the details already inside
         const editReviewWindow = document.getElementById("editReview");
@@ -104,7 +106,7 @@ function capitalizeFirstLetter(word) {
             editReviewWindow.style.display = "block";
         };
     }
-    
+
 
     window.onload = function() {
         document.getElementById('FavouriteAlbumName').textContent = userFavourites.favouriteAlbum.name;

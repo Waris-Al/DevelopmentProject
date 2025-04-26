@@ -32,6 +32,32 @@
             }
         }
 
+        function createChat(sender, receiver)
+        {
+            fetch('/createConversation', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ sender: sender, receiver: receiver })
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Failed to create conversation');
+                }
+            })
+            .then(data => {
+                window.location.href = '{{ url_for('messagingRoutes.loadUsersConversations') }}';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while creating the conversation');
+            });
+        }
+
+
         document.getElementById('follow-button')?.addEventListener('click', followUser);
     </script>
     <script src="../static/JS/homepage.js" defer></script>
@@ -39,7 +65,7 @@
         <h1>{{ username }}'s Favourites</h1>
 
         {% if showChatButton %}
-            <button id="chat-button">Chat</button>
+            <button id="chat-button" onclick="createChat('{{ session['username'] }}', '{{ username }}')">Chat</button>
         {% elif showFollowButton %}
             <button id="follow-button" onclick='followUser()'>Follow</button>
         {% endif %}

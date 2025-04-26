@@ -87,12 +87,12 @@ def addMessages():
     return jsonify({"status": "success", "message": message})  
 
 
-@messagingRoutes.route("/createConversation", methods=["GET"])
+@messagingRoutes.route("/createConversation", methods=['POST'])
 def createConversation():
-    #again change these all to use the session variables
-    #conversersData = request.json
-    sender = "thatsnotme" #conversersData.get("sender")
-    receiver = "wazzamazza" #conversersData.get("receiver")
+    conversersData = request.json
+    sender = conversersData.get("sender")
+    receiver = conversersData.get("receiver")
+    
     success = newConversation(sender, receiver)
     if success:
         return jsonify({"status": "success", "message": "Conversation created"})
