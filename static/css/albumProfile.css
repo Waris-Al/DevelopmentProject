@@ -15,3 +15,37 @@ div#commentDiv {
 @media screen and (max-width: 768px) {
 
 }
+
+.reviewTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 16px;
+    text-align: left;
+}
+
+.reviewRow {
+    border-bottom: 1px solid #ddd;
+}
+
+.reviewUsername, .reviewDate, .reviewText, .reviewReply {
+    padding: 10px;
+}
+
+.replyButton, .commentButton {
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.commentBox {
+    margin-top: 10px;
+}
+
+.commentInput {
+    width: 80%;
+    padding: 5px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}

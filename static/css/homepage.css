@@ -133,3 +133,63 @@ div#commentDiv {
     margin-left: 5px;
 }
 
+p#albumName, p#artistName  {
+    width: 100%;
+}
+
+.albumToReview, .saveReview
+{
+    position: relative;
+    margin-left: 0;
+    display: inline;
+}
+
+.averageRating
+{
+    display: none;
+}
+
+img#albumListened
+{
+    width: 200px;
+    height: 200px;
+}
+
+textarea#notes {
+    width: 98%;
+    height: 88px;
+    margin-top: 4%;
+    margin-bottom: 2%;
+}
+
+.RecentReviews {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 18px;
+    text-align: left;
+    }
+
+    .RecentReviews th, .RecentReviews td {
+    padding: 12px;
+    }
+
+
+
+    .RecentReviews img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    }
+
+    .borderEditButton {
+    text-align: center;
+    }
+
+    .editButton {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px;
+    }
+

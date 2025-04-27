@@ -42,23 +42,23 @@
     <p>Total Tracks: {{ albumInfo.totalTracks }}</p>
 </div>
 
-
-<table class="">
+<h2>Reviews</h2>
+<table class="reviewTable">
     <tbody>
         {% for review in reviews %}
-        <tr>
-            <td>{{ review.reviewer_username }}</td>
-            <td>{{ review.date_listened }}</td>
-            <td>{{ review.review }}</td>
-            <td>
-                <button onclick="leaveComment({{ review.reviewID }})">Reply</button>
+        <tr class="reviewRow">
+            <td class="reviewUsername">{{ review.reviewer_username }}</td>
+            <td class="reviewDate">{{ review.date_listened }}</td>
+            <td class="reviewText">{{ review.review }}</td>
+            <td class="reviewReply">
+                <button class="replyButton" onclick="leaveComment({{ review.reviewID }})">Reply</button>
             </td>
         </tr>
-        <tr>
+        <tr class="commentRow">
             <td>
-                <div id="commentFor-{{ review.reviewID }}" style="display:none;">
-                    <input type="text" id="commentInput-{{review.reviewID}}" placeholder="Write a comment...">
-                    <button onclick="addComment({{ review.reviewID }})">Comment</button>
+                <div id="commentFor-{{ review.reviewID }}" class="commentBox" style="display:none;">
+                    <input type="text" id="commentInput-{{review.reviewID}}" class="commentInput" placeholder="Write a comment...">
+                    <button class="commentButton" onclick="addComment({{ review.reviewID }})">Comment</button>
                 </div>
             </td>
         </tr>
