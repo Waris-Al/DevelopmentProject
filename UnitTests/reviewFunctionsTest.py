@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch, MagicMock
 from flask import session
-from app import app  # Import your Flask app here
+from app import app 
 import json
 
 class TestAppFunctions(unittest.TestCase):
@@ -18,15 +18,17 @@ class TestAppFunctions(unittest.TestCase):
         mock_addReview.return_value = True
         
         with self.app as client:
+            with client.session_transaction() as session:
+                session['email'] = "test1324@test.com"
+                session['username'] = "tay"
+                
             response = client.post('/save_review', json={
-               "user_email": "covenec@mailinator.com",
                "review_data": {
                    "date_listened": "2025-12-23",
                    "review": "it was alright"
-               },
-               "username": "kennykungfu"
+               }
             })
-            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.status_code, 200) #currently coming back as 400
             self.assertEqual(response.json, "Review added for kennykungfu covenec@mailinator.com")
     
     @patch('app.editReview')
@@ -54,6 +56,22 @@ class TestAppFunctions(unittest.TestCase):
             })
             self.assertEqual(response.status_code, 200)
             self.assertTrue(response.json)
+    
+    
+    
+    @patch('app.addComment')
+    def test_addComment(self, mock_addComment):
+
+        with self.app as client:
+            with client.session_transaction() as session:
+                session['username'] = "tay"
+                
+            response = client.post('/addComment', json={
+                "reviewID": "1",
+                "comment" : "your opinion is a zero"
+            })
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.data.decode(), "Comment added")
 
 if __name__ == '__main__':
     unittest.main()
